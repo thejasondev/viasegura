@@ -35,7 +35,7 @@ const prevModule = modules[modIndex - 1] || null;
     <p class="text-surface-500 dark:text-surface-400">{module.description}</p>
     <div class="mt-4 flex items-center gap-3">
       <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-700" id="module-overall-progress" style="width: 0%"></div>
+        <div class="h-full bg-linear-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-700" id="module-overall-progress" style="width: 0%"></div>
       </div>
       <span class="text-sm font-semibold" id="module-overall-text">0%</span>
     </div>
@@ -207,31 +207,41 @@ const prevModule = modules[modIndex - 1] || null;
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('astro:page-load', () => {
+    // Only run if we are on a module page (check if tab exists)
+    const tabs = document.querySelectorAll('.section-tab');
+    if (tabs.length === 0) return;
+
     showSection(0);
     updateReadStatus();
 
-    // Tab clicks
-    document.querySelectorAll('.section-tab').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const index = parseInt(tab.getAttribute('data-index') || '0');
+    // Clean up previous listeners by cloning nodes to prevent SPA duplication, just in case
+    tabs.forEach((tab) => {
+      const newTab = tab.cloneNode(true) as HTMLElement;
+      tab.parentNode?.replaceChild(newTab, tab);
+      newTab.addEventListener('click', () => {
+        const index = parseInt(newTab.getAttribute('data-index') || '0');
         showSection(index);
       });
     });
 
     // Navigation buttons
     document.querySelectorAll('.nav-section-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = parseInt(btn.getAttribute('data-target-index') || '0');
+      const newBtn = btn.cloneNode(true) as HTMLElement;
+      btn.parentNode?.replaceChild(newBtn, btn);
+      newBtn.addEventListener('click', () => {
+        const target = parseInt(newBtn.getAttribute('data-target-index') || '0');
         showSection(target);
       });
     });
 
     // Mark as read
     document.querySelectorAll('.mark-read-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const moduleId = btn.getAttribute('data-module-id')!;
-        const sectionId = btn.getAttribute('data-section-id')!;
+      const newBtn = btn.cloneNode(true) as HTMLElement;
+      btn.parentNode?.replaceChild(newBtn, btn);
+      newBtn.addEventListener('click', () => {
+        const moduleId = newBtn.getAttribute('data-module-id')!;
+        const sectionId = newBtn.getAttribute('data-section-id')!;
         markSectionRead(moduleId, sectionId);
         recordStudyActivity();
         updateReadStatus();

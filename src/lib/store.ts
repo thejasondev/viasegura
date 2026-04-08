@@ -20,14 +20,14 @@ const defaultProgress: UserProgress = {
 };
 
 // ---- Stores ----
-export const $theme = atom<ThemeMode>('system');
+export const $theme = atom<ThemeMode>('light');
 export const $progress = map<UserProgress>(defaultProgress);
 export const $currentQuiz = atom<QuizSession | null>(null);
 export const $showConfetti = atom(false);
 
 // ---- Initialize from localStorage ----
 export function initStores(): void {
-  const savedTheme = loadFromStorage<ThemeMode>('theme', 'system');
+  const savedTheme = loadFromStorage<ThemeMode>('theme', 'light');
   $theme.set(savedTheme);
 
   const savedProgress = loadFromStorage<UserProgress>('progress', defaultProgress);

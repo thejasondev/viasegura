@@ -44,12 +44,14 @@ const {
     <script is:inline>
       (function() {
         const stored = localStorage.getItem('viasegura_theme');
-        let theme = 'system';
+        let theme = 'light';
         if (stored) {
           try { theme = JSON.parse(stored).data; } catch(e) {}
         }
         if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
         }
       })();
     </script>
@@ -198,9 +200,13 @@ const {
 
     <!-- Theme toggle + init stores -->
     <script>
-      import { initStores, setTheme, $theme } from '../lib/store';
+      import { initStores, setTheme, applyTheme, $theme } from '../lib/store';
 
       // Initialize stores and bind events on every page transition
+      document.addEventListener('astro:after-swap', () => {
+        applyTheme($theme.get());
+      });
+
       document.addEventListener('astro:page-load', () => {
         initStores();
 
