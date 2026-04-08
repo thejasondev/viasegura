@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://viasegura.vercel.app/sitemap-index.xml

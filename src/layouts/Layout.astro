@@ -9,13 +9,18 @@ export interface Props {
   title: string;
   description?: string;
   activeNav?: string;
+  image?: string;
 }
 
 const {
   title,
   description = 'Estudia y aprueba el examen teórico de conducción en Cuba. Basado en la Ley 109 del Código de Seguridad Vial.',
   activeNav = '',
+  image = '/icons/icon-512.png',
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://viasegura.vercel.app');
+const optimizedTitle = `${title} | VíaSegura`;
 ---
 
 <!doctype html>
@@ -36,7 +41,41 @@ const {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <title>{title} | VíaSegura</title>
+    <title>{optimizedTitle}</title>
+    
+    <!-- SEO & Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={optimizedTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, canonicalURL)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={optimizedTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, canonicalURL)} />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "VíaSegura",
+      "url": canonicalURL.toString(),
+      "description": description,
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    })} />
+
     <ClientRouter />
     <Analytics />
 
