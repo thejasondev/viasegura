@@ -1,0 +1,44 @@
+---
+export interface Props {
+  class?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+}
+
+const { class: className = '', size = 'md' } = Astro.props;
+
+const sizes = {
+  sm: 'w-6 h-6',
+  md: 'w-8 h-8',
+  lg: 'w-12 h-12',
+  xl: 'w-24 h-24',
+};
+---
+
+<svg class:list={[sizes[size], className]} viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logo-bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--color-primary-400)" />
+      <stop offset="100%" stop-color="var(--color-primary-600)" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Rounded Square Profile -->
+  <rect width="128" height="128" rx="28" fill="url(#logo-bg-gradient)"/>
+  
+  <g transform="translate(64,64)">
+    <!-- Base Shield -->
+    <path d="M0-38 L30-24 L30,8 C30,26 16,38 0,44 C-16,38 -30,26 -30,8 L-30-24 Z" fill="currentColor" fill-opacity="0.95"/>
+    
+    <!-- Central Road Segment -->
+    <path d="M-12,36 L-8,-20 L8,-20 L12,36" fill="url(#logo-bg-gradient)"/>
+    
+    <!-- Road Lane Dashes -->
+    <line x1="0" y1="-16" x2="0" y2="-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="0" y1="-2" x2="0" y2="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="0" y1="12" x2="0" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="0" y1="26" x2="0" y2="34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Success Checkmark (Optional but keeps identity) -->
+    <path d="M-10,-4 L-4,4 L12,-12" fill="none" class="stroke-success-500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,-14) scale(0.8)"/>
+  </g>
+</svg>

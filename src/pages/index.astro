@@ -1,14 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ModuleCard from '../components/study/ModuleCard.astro';
+import Logo from '../components/ui/Logo.astro';
 import { modules } from '../data/modules';
 ---
 
 <Layout title="Inicio" activeNav="home">
   <!-- Hero Section -->
-  <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 p-8 md:p-12 mb-8 text-white" id="hero">
+  <section class="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary-600 via-primary-500 to-primary-700 p-8 md:p-12 mb-8 text-white" id="hero">
     <div class="absolute inset-0 opacity-10">
-      <div class="absolute top-4 right-4 text-8xl">🛡️</div>
+      <div class="absolute -top-4 -right-4">
+        <Logo size="xl" class="w-48 h-48 opacity-40 text-black mix-blend-overlay" />
+      </div>
       <div class="absolute bottom-4 left-4 text-6xl opacity-50">🚗</div>
       <div class="absolute top-1/2 right-1/4 text-5xl opacity-30">🚦</div>
     </div>
@@ -96,9 +99,9 @@ import { modules } from '../data/modules';
     <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
       <span>📋</span> Datos del Examen Real
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-primary-500/10 flex items-center justify-center shrink-0">
           <span class="text-primary-500 font-bold text-lg">20</span>
         </div>
         <div>
@@ -106,8 +109,8 @@ import { modules } from '../data/modules';
           <div class="text-xs text-surface-500 dark:text-surface-400">Selección múltiple con 4 opciones</div>
         </div>
       </div>
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-success-500/10 flex items-center justify-center flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-success-500/10 flex items-center justify-center shrink-0">
           <span class="text-success-500 font-bold text-lg">70%</span>
         </div>
         <div>
@@ -115,8 +118,8 @@ import { modules } from '../data/modules';
           <div class="text-xs text-surface-500 dark:text-surface-400">Mínimo 14 respuestas correctas</div>
         </div>
       </div>
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-accent-500/10 flex items-center justify-center flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-accent-500/10 flex items-center justify-center shrink-0">
           <span class="text-accent-500 font-bold text-lg">30</span>
         </div>
         <div>
@@ -170,6 +173,15 @@ import { modules } from '../data/modules';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', updateStats);
-  $progress.subscribe(updateStats);
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('stat-streak')) {
+      updateStats();
+    }
+  });
+
+  $progress.listen(() => {
+    if (document.getElementById('stat-streak')) {
+      updateStats();
+    }
+  });
 </script>

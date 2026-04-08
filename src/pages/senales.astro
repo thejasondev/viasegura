@@ -36,40 +36,50 @@ import { signals, signalCategories } from '../data/signals';
 </Layout>
 
 <script>
-  // Category filtering
-  document.querySelectorAll('.signal-tab').forEach((tab) => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.signal-tab').forEach((t) => {
-        t.classList.remove('border-primary-500', 'bg-primary-500/10', 'text-primary-500');
-        t.classList.add('border-surface-200', 'dark:border-surface-800');
-      });
-      tab.classList.add('border-primary-500', 'bg-primary-500/10', 'text-primary-500');
-      tab.classList.remove('border-surface-200', 'dark:border-surface-800');
+  // Initialize logic on page load (supports View Transitions)
+  document.addEventListener('astro:page-load', () => {
+    // Category filtering
+    document.querySelectorAll('.signal-tab').forEach((tab) => {
+      // Remove old listeners to prevent duplicates (safeguard)
+      const newTab = tab.cloneNode(true) as HTMLElement;
+      tab.parentNode?.replaceChild(newTab, tab);
 
-      const category = tab.getAttribute('data-category');
-      document.querySelectorAll('.signal-card').forEach((card) => {
-        const cardCat = card.getAttribute('data-category');
-        if (category === 'all' || cardCat === category) {
-          (card as HTMLElement).style.display = '';
-        } else {
-          (card as HTMLElement).style.display = 'none';
-        }
+      newTab.addEventListener('click', () => {
+        document.querySelectorAll('.signal-tab').forEach((t) => {
+          t.classList.remove('border-primary-500', 'bg-primary-500/10', 'text-primary-500');
+          t.classList.add('border-surface-200', 'dark:border-surface-800');
+        });
+        newTab.classList.add('border-primary-500', 'bg-primary-500/10', 'text-primary-500');
+        newTab.classList.remove('border-surface-200', 'dark:border-surface-800');
+
+        const category = newTab.getAttribute('data-category');
+        document.querySelectorAll('.signal-card').forEach((card) => {
+          const cardCat = card.getAttribute('data-category');
+          if (category === 'all' || cardCat === category) {
+            (card as HTMLElement).style.display = '';
+          } else {
+            (card as HTMLElement).style.display = 'none';
+          }
+        });
       });
     });
-  });
 
-  // Card flip
-  document.querySelectorAll('.signal-card').forEach((card) => {
-    card.addEventListener('click', () => {
-      const inner = card.querySelector('.preserve-3d') as HTMLElement;
-      const isFlipped = inner.getAttribute('data-flipped') === 'true';
-      if (isFlipped) {
-        inner.style.transform = 'rotateY(0deg)';
-        inner.setAttribute('data-flipped', 'false');
-      } else {
-        inner.style.transform = 'rotateY(180deg)';
-        inner.setAttribute('data-flipped', 'true');
-      }
+    // Card flip
+    document.querySelectorAll('.signal-card').forEach((card) => {
+      const newCard = card.cloneNode(true) as HTMLElement;
+      card.parentNode?.replaceChild(newCard, card);
+
+      newCard.addEventListener('click', () => {
+        const inner = newCard.querySelector('.preserve-3d') as HTMLElement;
+        const isFlipped = inner.getAttribute('data-flipped') === 'true';
+        if (isFlipped) {
+          inner.style.transform = 'rotateY(0deg)';
+          inner.setAttribute('data-flipped', 'false');
+        } else {
+          inner.style.transform = 'rotateY(180deg)';
+          inner.setAttribute('data-flipped', 'true');
+        }
+      });
     });
   });
 </script>
