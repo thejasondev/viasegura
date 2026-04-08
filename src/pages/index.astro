@@ -1,17 +1,175 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import ModuleCard from '../components/study/ModuleCard.astro';
+import { modules } from '../data/modules';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Inicio" activeNav="home">
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 p-8 md:p-12 mb-8 text-white" id="hero">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-4 right-4 text-8xl">🛡️</div>
+      <div class="absolute bottom-4 left-4 text-6xl opacity-50">🚗</div>
+      <div class="absolute top-1/2 right-1/4 text-5xl opacity-30">🚦</div>
+    </div>
+    <div class="relative z-10">
+      <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+        <span>📜</span> Basado en la Ley 109
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black mb-3 leading-tight">
+        Aprueba tu examen<br />de conducción
+      </h1>
+      <p class="text-white/80 text-lg md:text-xl mb-6 max-w-lg">
+        Estudia el Código de Seguridad Vial de Cuba de forma interactiva y divertida. Todo lo que necesitas, en tu bolsillo.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/estudiar" class="inline-flex items-center gap-2 bg-white text-primary-700 font-bold px-6 py-3 rounded-2xl hover:bg-white/90 transition-all hover:scale-105 active:scale-95 shadow-lg" id="cta-study">
+          📚 Empezar a Estudiar
+        </a>
+        <a href="/examen" class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm font-semibold px-6 py-3 rounded-2xl hover:bg-white/25 transition-all border border-white/20" id="cta-exam">
+          📝 Hacer Examen
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Stats -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" id="quick-stats">
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl p-4 text-center border border-surface-200 dark:border-surface-800">
+      <div class="text-2xl mb-1">🔥</div>
+      <div class="text-2xl font-bold text-primary-500" id="stat-streak">0</div>
+      <div class="text-xs text-surface-500 dark:text-surface-400">Días de racha</div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl p-4 text-center border border-surface-200 dark:border-surface-800">
+      <div class="text-2xl mb-1">📖</div>
+      <div class="text-2xl font-bold text-success-500" id="stat-modules">0/8</div>
+      <div class="text-xs text-surface-500 dark:text-surface-400">Módulos</div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl p-4 text-center border border-surface-200 dark:border-surface-800">
+      <div class="text-2xl mb-1">✅</div>
+      <div class="text-2xl font-bold text-accent-500" id="stat-exams">0</div>
+      <div class="text-xs text-surface-500 dark:text-surface-400">Exámenes</div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl p-4 text-center border border-surface-200 dark:border-surface-800">
+      <div class="text-2xl mb-1">🏆</div>
+      <div class="text-2xl font-bold text-danger-500" id="stat-badges">0</div>
+      <div class="text-xs text-surface-500 dark:text-surface-400">Logros</div>
+    </div>
+  </section>
+
+  <!-- Study Modules Preview -->
+  <section class="mb-8" id="modules-section">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold">Módulos de Estudio</h2>
+      <a href="/estudiar" class="text-sm text-primary-500 hover:text-primary-400 font-medium">Ver todos →</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="modules-grid">
+      <!-- The inner HTML of these will be populated on the client or SSG... Wait, the module progress needs to be reactive if we just use vanilla JS for now, but initially let's keep the vanilla JS logic. The ModuleCard we built takes a progressPercent prop. Since this is SSG and progress is in client localStorage, Astro SSG won't know the progress. In original code, the progress bar width was set via Vanilla JS. So we need to keep `module-progress` class and `data-module-id` in the ModuleCard component. 
+      Let me check ModuleCard.astro... Yes, it has `class="... module-progress" data-module-id={module.id}`. So Vanilla JS will pick it up automatically! -->
+      {modules.slice(0, 4).map((mod, i) => (
+        <ModuleCard module={mod} progressPercent={0} index={i} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Quick Access -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="quick-access">
+    <a href="/senales" class="group p-6 rounded-2xl bg-gradient-to-br from-danger-500/10 to-danger-600/5 border border-danger-500/20 hover:border-danger-500/40 transition-all hover:shadow-lg" id="quick-signals">
+      <div class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">🚦</div>
+      <h3 class="font-bold text-lg mb-1">Señales de Tránsito</h3>
+      <p class="text-sm text-surface-500 dark:text-surface-400">Aprende todas las señales con tarjetas interactivas</p>
+    </a>
+    <a href="/practica" class="group p-6 rounded-2xl bg-gradient-to-br from-success-500/10 to-success-600/5 border border-success-500/20 hover:border-success-500/40 transition-all hover:shadow-lg" id="quick-practice">
+      <div class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">✍️</div>
+      <h3 class="font-bold text-lg mb-1">Práctica Rápida</h3>
+      <p class="text-sm text-surface-500 dark:text-surface-400">Quizzes cortos por tema con retroalimentación inmediata</p>
+    </a>
+    <a href="/examen" class="group p-6 rounded-2xl bg-gradient-to-br from-accent-500/10 to-accent-600/5 border border-accent-500/20 hover:border-accent-500/40 transition-all hover:shadow-lg" id="quick-exam">
+      <div class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">📝</div>
+      <h3 class="font-bold text-lg mb-1">Simulacro de Examen</h3>
+      <p class="text-sm text-surface-500 dark:text-surface-400">20 preguntas, 30 min. ¡Como el examen real!</p>
+    </a>
+  </section>
+
+  <!-- Exam Info -->
+  <section class="rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 md:p-8" id="exam-info">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+      <span>📋</span> Datos del Examen Real
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+          <span class="text-primary-500 font-bold text-lg">20</span>
+        </div>
+        <div>
+          <div class="font-semibold text-sm">Preguntas</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400">Selección múltiple con 4 opciones</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-success-500/10 flex items-center justify-center flex-shrink-0">
+          <span class="text-success-500 font-bold text-lg">70%</span>
+        </div>
+        <div>
+          <div class="font-semibold text-sm">Para Aprobar</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400">Mínimo 14 respuestas correctas</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-accent-500/10 flex items-center justify-center flex-shrink-0">
+          <span class="text-accent-500 font-bold text-lg">30</span>
+        </div>
+        <div>
+          <div class="font-semibold text-sm">Minutos</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400">Tiempo máximo para completar</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { $progress } from '../lib/store';
+  import { modules } from '../data/modules';
+
+  function updateStats() {
+    const progress = $progress.get();
+
+    // Streak
+    const streakEl = document.getElementById('stat-streak');
+    if (streakEl) streakEl.textContent = String(progress.streak.current);
+
+    // Modules completed
+    let completed = 0;
+    modules.forEach((mod) => {
+      const read = progress.modulesRead[mod.id] || [];
+      if (read.length >= mod.sections.length) completed++;
+    });
+    const modulesEl = document.getElementById('stat-modules');
+    if (modulesEl) modulesEl.textContent = `${completed}/8`;
+
+    // Exams passed
+    const examsPassed = progress.examHistory.filter((e) => e.passed).length;
+    const examsEl = document.getElementById('stat-exams');
+    if (examsEl) examsEl.textContent = String(examsPassed);
+
+    // Badges
+    const badgesEl = document.getElementById('stat-badges');
+    if (badgesEl) badgesEl.textContent = String(progress.achievements.length);
+
+    // Module progress bars
+    modules.forEach((mod) => {
+      const bar = document.querySelector(`.module-progress[data-module-id="${mod.id}"]`) as HTMLElement;
+      if (bar) {
+        const read = progress.modulesRead[mod.id] || [];
+        const pct = mod.sections.length > 0
+          ? Math.round((read.length / mod.sections.length) * 100)
+          : 0;
+        bar.style.width = `${pct}%`;
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', updateStats);
+  $progress.subscribe(updateStats);
+</script>

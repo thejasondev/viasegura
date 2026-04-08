@@ -1,0 +1,32 @@
+---
+export interface Props {
+  text: string | number;
+  variant?: 'primary' | 'danger' | 'success' | 'warning' | 'neutral';
+  size?: 'sm' | 'md';
+  uppercase?: boolean;
+}
+
+const { text, variant = 'neutral', size = 'sm', uppercase = false } = Astro.props;
+
+const variants = {
+  primary: 'bg-primary-500/10 text-primary-500',
+  danger: 'bg-danger-500/10 text-danger-500',
+  success: 'bg-success-500/10 text-success-500',
+  warning: 'bg-accent-500/10 text-accent-600 dark:text-accent-400',
+  neutral: 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200',
+};
+
+const sizes = {
+  sm: 'text-[10px] px-1.5 py-0.5 rounded-md',
+  md: 'text-xs px-2 py-0.5 rounded-full',
+};
+---
+
+<span class:list={[
+  "font-bold tracking-wider",
+  variants[variant],
+  sizes[size],
+  { "uppercase": uppercase }
+]}>
+  {text}
+</span>

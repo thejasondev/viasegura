@@ -1,0 +1,186 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { modules } from '../data/modules';
+import { ACHIEVEMENTS } from '../lib/achievements';
+---
+
+<Layout title="Mi Progreso" activeNav="progreso">
+  <div class="mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold mb-2">📊 Mi Progreso</h1>
+    <p class="text-surface-500 dark:text-surface-400">Tu camino hacia la licencia de conducción.</p>
+  </div>
+
+  <!-- Readiness Indicator -->
+  <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6" id="readiness-section">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-bold flex items-center gap-2"><span>🎯</span> Preparación para el Examen</h2>
+      <span class="text-2xl font-black" id="readiness-pct">0%</span>
+    </div>
+    <div class="h-4 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden mb-2">
+      <div class="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-danger-500 via-accent-500 to-success-500" id="readiness-bar" style="width: 0%"></div>
+    </div>
+    <p class="text-sm text-surface-500 dark:text-surface-400" id="readiness-message">Comienza a estudiar para calcular tu preparación.</p>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="stats-grid">
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 text-center">
+      <div class="text-3xl mb-1">🔥</div>
+      <div class="text-3xl font-black" id="pg-streak">0</div>
+      <div class="text-xs text-surface-500">Racha actual</div>
+      <div class="text-[10px] text-surface-400 mt-1">Récord: <span id="pg-streak-best">0</span></div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 text-center">
+      <div class="text-3xl mb-1">📖</div>
+      <div class="text-3xl font-black text-success-500" id="pg-sections">0</div>
+      <div class="text-xs text-surface-500">Secciones leídas</div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 text-center">
+      <div class="text-3xl mb-1">✍️</div>
+      <div class="text-3xl font-black text-primary-500" id="pg-quizzes">0</div>
+      <div class="text-xs text-surface-500">Quizzes realizados</div>
+    </div>
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 text-center">
+      <div class="text-3xl mb-1">📝</div>
+      <div class="text-3xl font-black text-accent-500" id="pg-exams">0</div>
+      <div class="text-xs text-surface-500">Exámenes aprobados</div>
+    </div>
+  </div>
+
+  <!-- Module Progress -->
+  <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+    <h2 class="font-bold mb-4 flex items-center gap-2"><span>📚</span> Progreso por Módulo</h2>
+    <div class="space-y-4">
+      {modules.map((mod) => (
+        <div class="flex items-center gap-3">
+          <span class="text-2xl flex-shrink-0">{mod.icon}</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-medium truncate">{mod.shortTitle}</span>
+              <span class="text-xs font-bold mod-pct" data-module-id={mod.id}>0%</span>
+            </div>
+            <div class="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-700 mod-bar" data-module-id={mod.id} style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Exam History -->
+  <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+    <h2 class="font-bold mb-4 flex items-center gap-2"><span>📝</span> Historial de Exámenes</h2>
+    <div id="exam-history-list"></div>
+    <div id="exam-history-empty" class="text-center py-8 text-surface-400">
+      <div class="text-4xl mb-2">📝</div>
+      <p class="text-sm">Aún no has realizado ningún examen.</p>
+      <a href="/examen" class="inline-block mt-3 text-sm font-semibold text-primary-500 hover:text-primary-400">Hacer mi primer examen →</a>
+    </div>
+  </div>
+
+  <!-- Achievements -->
+  <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
+    <h2 class="font-bold mb-4 flex items-center gap-2">
+      <span>🏆</span> Logros
+      <span class="text-xs font-normal text-surface-400" id="badge-count-text">0/{ACHIEVEMENTS.length}</span>
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="achievements-grid">
+      {ACHIEVEMENTS.map((ach) => (
+        <div class="achievement-card rounded-xl border border-surface-200 dark:border-surface-800 p-4 text-center opacity-40 grayscale transition-all" data-achievement-id={ach.id}>
+          <div class="text-3xl mb-2">{ach.icon}</div>
+          <div class="font-bold text-xs mb-0.5">{ach.title}</div>
+          <div class="text-[10px] text-surface-400">{ach.description}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { $progress } from '../lib/store';
+  import { modules } from '../data/modules';
+  import { ACHIEVEMENTS } from '../lib/achievements';
+
+  function updateProgress() {
+    const progress = $progress.get();
+
+    // Streak
+    document.getElementById('pg-streak')!.textContent = String(progress.streak.current);
+    document.getElementById('pg-streak-best')!.textContent = String(progress.streak.longest);
+
+    // Sections read
+    const totalRead = Object.values(progress.modulesRead).flat().length;
+    document.getElementById('pg-sections')!.textContent = String(totalRead);
+
+    // Quizzes
+    document.getElementById('pg-quizzes')!.textContent = String(progress.quizHistory.length);
+
+    // Exams passed
+    const examsPassed = progress.examHistory.filter((e) => e.passed).length;
+    document.getElementById('pg-exams')!.textContent = String(examsPassed);
+
+    // Module progress
+    let totalSections = 0;
+    let totalReadSections = 0;
+    modules.forEach((mod) => {
+      const read = progress.modulesRead[mod.id] || [];
+      const pct = mod.sections.length > 0 ? Math.round((read.length / mod.sections.length) * 100) : 0;
+      totalSections += mod.sections.length;
+      totalReadSections += read.length;
+
+      const bar = document.querySelector(`.mod-bar[data-module-id="${mod.id}"]`) as HTMLElement;
+      if (bar) bar.style.width = `${pct}%`;
+      const pctEl = document.querySelector(`.mod-pct[data-module-id="${mod.id}"]`);
+      if (pctEl) pctEl.textContent = `${pct}%`;
+    });
+
+    // Readiness
+    const studyScore = totalSections > 0 ? (totalReadSections / totalSections) * 50 : 0;
+    const quizScore = Math.min(progress.quizHistory.length * 2, 20);
+    const examScore = Math.min(examsPassed * 10, 30);
+    const readiness = Math.round(studyScore + quizScore + examScore);
+
+    document.getElementById('readiness-pct')!.textContent = `${Math.min(readiness, 100)}%`;
+    (document.getElementById('readiness-bar') as HTMLElement).style.width = `${Math.min(readiness, 100)}%`;
+
+    const readinessMsg = document.getElementById('readiness-message')!;
+    if (readiness >= 80) readinessMsg.textContent = '🎉 ¡Estás muy bien preparado! Ve a por el examen real.';
+    else if (readiness >= 50) readinessMsg.textContent = '📚 Buen progreso. Sigue practicando para estar más seguro.';
+    else if (readiness > 0) readinessMsg.textContent = '💪 Apenas empiezas. Lee los módulos y haz quizzes.';
+
+    // Exam history
+    const historyEl = document.getElementById('exam-history-list')!;
+    const emptyEl = document.getElementById('exam-history-empty')!;
+    const allExams = [...progress.examHistory].reverse().slice(0, 10);
+
+    if (allExams.length > 0) {
+      emptyEl.classList.add('hidden');
+      historyEl.innerHTML = allExams.map((e) => `
+        <div class="flex items-center gap-3 py-3 border-b border-surface-200 dark:border-surface-800 last:border-0">
+          <span class="text-xl">${e.passed ? '✅' : '❌'}</span>
+          <div class="flex-1">
+            <div class="font-semibold text-sm">${e.passed ? 'Aprobado' : 'No aprobado'} — ${e.score}%</div>
+            <div class="text-xs text-surface-400">${e.correctAnswers}/${e.totalQuestions} correctas · ${e.date}</div>
+          </div>
+          <span class="text-xs font-bold ${e.passed ? 'text-success-500' : 'text-danger-500'}">${e.score}%</span>
+        </div>
+      `).join('');
+    }
+
+    // Achievements
+    const unlockedIds = new Set(progress.achievements);
+    document.getElementById('badge-count-text')!.textContent = `${progress.achievements.length}/${ACHIEVEMENTS.length}`;
+
+    document.querySelectorAll('.achievement-card').forEach((card) => {
+      const id = card.getAttribute('data-achievement-id')!;
+      if (unlockedIds.has(id)) {
+        card.classList.remove('opacity-40', 'grayscale');
+        card.classList.add('border-accent-500/30', 'bg-accent-500/5');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', updateProgress);
+  $progress.subscribe(updateProgress);
+</script>

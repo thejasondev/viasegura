@@ -1,0 +1,291 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { modules } from '../data/modules';
+import { questions } from '../data/questions';
+---
+
+<Layout title="Práctica" activeNav="practica">
+  <!-- Setup Screen -->
+  <div id="setup-screen">
+    <div class="mb-6">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">✍️ Práctica Rápida</h1>
+      <p class="text-surface-500 dark:text-surface-400">Selecciona un tema y la cantidad de preguntas. Recibirás retroalimentación inmediata.</p>
+    </div>
+
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+      <h2 class="font-bold mb-4">Selecciona el Tema</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="module-select">
+        <button class="topic-btn active flex items-center gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all text-left" data-module="all">
+          <span class="text-2xl">📚</span>
+          <div>
+            <div class="font-semibold text-sm">Todos los Temas</div>
+            <div class="text-xs text-surface-500">{questions.length} preguntas</div>
+          </div>
+        </button>
+        {modules.map((mod) => {
+          const count = questions.filter((q) => q.moduleId === mod.id).length;
+          return (
+            <button class="topic-btn flex items-center gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all text-left" data-module={mod.id}>
+              <span class="text-2xl">{mod.icon}</span>
+              <div>
+                <div class="font-semibold text-sm">{mod.shortTitle}</div>
+                <div class="text-xs text-surface-500">{count} preguntas</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+      <h2 class="font-bold mb-4">Cantidad de Preguntas</h2>
+      <div class="flex gap-3" id="count-select">
+        <button class="count-btn px-6 py-3 rounded-xl border border-surface-200 dark:border-surface-800 font-bold hover:border-primary-500/50 transition-all" data-count="5">5</button>
+        <button class="count-btn active px-6 py-3 rounded-xl border border-surface-200 dark:border-surface-800 font-bold hover:border-primary-500/50 transition-all" data-count="10">10</button>
+        <button class="count-btn px-6 py-3 rounded-xl border border-surface-200 dark:border-surface-800 font-bold hover:border-primary-500/50 transition-all" data-count="15">15</button>
+      </div>
+    </div>
+
+    <button id="start-practice" class="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20">
+      🚀 Comenzar Práctica
+    </button>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen" class="hidden">
+    <!-- Progress -->
+    <div class="flex items-center gap-4 mb-6">
+      <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-primary-500 to-success-500 rounded-full transition-all duration-500" id="quiz-progress-bar" style="width: 0%"></div>
+      </div>
+      <span class="text-sm font-bold" id="quiz-counter">1/10</span>
+    </div>
+
+    <!-- Question -->
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8 mb-6" id="question-container">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-primary-500/10 text-primary-500" id="q-difficulty">Fácil</span>
+        <span class="text-xs text-surface-400" id="q-module">Módulo 1</span>
+      </div>
+      <h2 class="text-lg md:text-xl font-bold mb-6" id="q-text"></h2>
+      <div class="space-y-3" id="q-options"></div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="hidden rounded-2xl p-6 mb-6" id="feedback-container">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl" id="feedback-icon"></span>
+        <div>
+          <div class="font-bold mb-1" id="feedback-title"></div>
+          <p class="text-sm" id="feedback-text"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Button -->
+    <button id="next-btn" class="hidden w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] transition-all">
+      Siguiente →
+    </button>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="results-screen" class="hidden animate-scale-in">
+    <div class="text-center mb-8">
+      <div class="text-6xl mb-4" id="result-emoji">🎉</div>
+      <h2 class="text-3xl font-black mb-2" id="result-title">¡Bien hecho!</h2>
+      <p class="text-surface-500 dark:text-surface-400" id="result-subtitle"></p>
+    </div>
+
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <div class="text-3xl font-black text-primary-500" id="result-score">0%</div>
+          <div class="text-xs text-surface-500">Puntuación</div>
+        </div>
+        <div>
+          <div class="text-3xl font-black text-success-500" id="result-correct">0</div>
+          <div class="text-xs text-surface-500">Correctas</div>
+        </div>
+        <div>
+          <div class="text-3xl font-black text-danger-500" id="result-wrong">0</div>
+          <div class="text-xs text-surface-500">Incorrectas</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button id="retry-btn" class="flex-1 py-3 rounded-xl font-semibold bg-surface-200 dark:bg-surface-800 hover:bg-surface-300 dark:hover:bg-surface-700 transition-all">
+        🔄 Repetir
+      </button>
+      <a href="/practica" class="flex-1 py-3 rounded-xl font-semibold bg-primary-500 text-white text-center hover:bg-primary-600 transition-all">
+        ✍️ Nueva Práctica
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { questions as allQuestions } from '../data/questions';
+  import { modules } from '../data/modules';
+  import type { Question, QuizResult } from '../lib/types';
+  import { selectPracticeQuestions, calculateResults, createQuizSession } from '../lib/quiz-engine';
+  import { addQuizResult, updateQuestionConfidence, recordStudyActivity, $progress } from '../lib/store';
+  import { generateId } from '../lib/storage';
+
+  let selectedModule = 'all';
+  let selectedCount = 10;
+  let currentQuestions: Question[] = [];
+  let currentIndex = 0;
+  let answers: Record<string, number> = {};
+  let answered = false;
+
+  // Topic selection
+  document.querySelectorAll('.topic-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.topic-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
+      btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
+      selectedModule = btn.getAttribute('data-module') || 'all';
+    });
+  });
+
+  // Count selection
+  document.querySelectorAll('.count-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.count-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
+      btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
+      selectedCount = parseInt(btn.getAttribute('data-count') || '10');
+    });
+  });
+
+  // Start practice
+  document.getElementById('start-practice')?.addEventListener('click', () => {
+    const moduleId = selectedModule === 'all' ? undefined : selectedModule;
+    currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+    if (currentQuestions.length === 0) {
+      alert('No hay suficientes preguntas para este tema.');
+      return;
+    }
+    currentIndex = 0;
+    answers = {};
+    answered = false;
+    recordStudyActivity();
+
+    document.getElementById('setup-screen')!.classList.add('hidden');
+    document.getElementById('quiz-screen')!.classList.remove('hidden');
+    showQuestion();
+  });
+
+  function showQuestion() {
+    const q = currentQuestions[currentIndex];
+    const mod = modules.find((m) => m.id === q.moduleId);
+    answered = false;
+
+    document.getElementById('q-text')!.textContent = q.text;
+    document.getElementById('q-module')!.textContent = mod ? `${mod.icon} ${mod.shortTitle}` : '';
+
+    const diffEl = document.getElementById('q-difficulty')!;
+    diffEl.textContent = q.difficulty === 'easy' ? 'Fácil' : q.difficulty === 'medium' ? 'Medio' : 'Difícil';
+    diffEl.className = `text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-lg ${
+      q.difficulty === 'easy' ? 'bg-success-500/10 text-success-500' :
+      q.difficulty === 'medium' ? 'bg-accent-500/10 text-accent-500' :
+      'bg-danger-500/10 text-danger-500'
+    }`;
+
+    const counter = document.getElementById('quiz-counter')!;
+    counter.textContent = `${currentIndex + 1}/${currentQuestions.length}`;
+
+    const progressBar = document.getElementById('quiz-progress-bar') as HTMLElement;
+    progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+
+    const optionsEl = document.getElementById('q-options')!;
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all font-medium';
+      btn.innerHTML = `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-surface-200 dark:bg-surface-800 text-xs font-bold mr-3">${String.fromCharCode(65 + i)}</span>${opt}`;
+      btn.addEventListener('click', () => selectAnswer(i));
+      optionsEl.appendChild(btn);
+    });
+
+    document.getElementById('feedback-container')!.classList.add('hidden');
+    document.getElementById('next-btn')!.classList.add('hidden');
+  }
+
+  function selectAnswer(index: number) {
+    if (answered) return;
+    answered = true;
+
+    const q = currentQuestions[currentIndex];
+    answers[q.id] = index;
+    const isCorrect = index === q.correctIndex;
+
+    updateQuestionConfidence(q.id, isCorrect);
+
+    // Highlight options
+    const options = document.querySelectorAll('.option-btn');
+    options.forEach((opt, i) => {
+      if (i === q.correctIndex) {
+        opt.classList.add('!border-success-500', '!bg-success-500/10');
+      } else if (i === index && !isCorrect) {
+        opt.classList.add('!border-danger-500', '!bg-danger-500/10', 'animate-shake');
+      }
+      opt.classList.add('pointer-events-none');
+    });
+
+    // Show feedback
+    const feedbackEl = document.getElementById('feedback-container')!;
+    feedbackEl.classList.remove('hidden');
+    feedbackEl.className = `rounded-2xl p-6 mb-6 ${isCorrect ? 'bg-success-500/10 border border-success-500/20' : 'bg-danger-500/10 border border-danger-500/20'}`;
+
+    document.getElementById('feedback-icon')!.textContent = isCorrect ? '✅' : '❌';
+    document.getElementById('feedback-title')!.textContent = isCorrect ? '¡Correcto!' : 'Incorrecto';
+    document.getElementById('feedback-text')!.textContent = q.explanation;
+
+    document.getElementById('next-btn')!.classList.remove('hidden');
+
+    // Update progress bar
+    const progressBar = document.getElementById('quiz-progress-bar') as HTMLElement;
+    progressBar.style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
+  }
+
+  document.getElementById('next-btn')?.addEventListener('click', () => {
+    currentIndex++;
+    if (currentIndex >= currentQuestions.length) {
+      showResults();
+    } else {
+      showQuestion();
+    }
+  });
+
+  function showResults() {
+    const session = createQuizSession('practice', currentQuestions, selectedModule === 'all' ? undefined : selectedModule);
+    session.answers = answers;
+    session.completedAt = new Date().toISOString();
+    const result = calculateResults(session, allQuestions);
+    addQuizResult(result);
+
+    document.getElementById('quiz-screen')!.classList.add('hidden');
+    document.getElementById('results-screen')!.classList.remove('hidden');
+
+    const emoji = result.score >= 90 ? '🌟' : result.score >= 70 ? '🎉' : result.score >= 50 ? '📚' : '💪';
+    const title = result.score >= 90 ? '¡Excelente!' : result.score >= 70 ? '¡Bien hecho!' : result.score >= 50 ? 'Vas mejorando' : 'Sigue practicando';
+    const subtitle = result.score >= 70
+      ? `Obtuviste ${result.score}%. ¡Sigue así!`
+      : `Obtuviste ${result.score}%. Repasa los temas y vuelve a intentarlo.`;
+
+    document.getElementById('result-emoji')!.textContent = emoji;
+    document.getElementById('result-title')!.textContent = title;
+    document.getElementById('result-subtitle')!.textContent = subtitle;
+    document.getElementById('result-score')!.textContent = `${result.score}%`;
+    document.getElementById('result-correct')!.textContent = String(result.correctAnswers);
+    document.getElementById('result-wrong')!.textContent = String(result.totalQuestions - result.correctAnswers);
+  }
+
+  document.getElementById('retry-btn')?.addEventListener('click', () => {
+    currentIndex = 0;
+    answers = {};
+    document.getElementById('results-screen')!.classList.add('hidden');
+    document.getElementById('quiz-screen')!.classList.remove('hidden');
+    showQuestion();
+  });
+</script>

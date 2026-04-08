@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { modules } from '../../data/modules';
+---
+
+<Layout title="Estudiar" activeNav="estudiar">
+  <div class="mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold mb-2">📚 Módulos de Estudio</h1>
+    <p class="text-surface-500 dark:text-surface-400">Domina cada tema de la Ley 109 para aprobar tu examen teórico.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="modules-grid">
+    {modules.map((mod, i) => (
+      <a
+        href={`/estudiar/${mod.slug}`}
+        class="group relative overflow-hidden rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 dark:hover:border-primary-500/30 transition-all hover:shadow-xl hover:shadow-primary-500/5 p-6"
+        id={`study-module-${mod.id}`}
+        style={`animation-delay: ${i * 80}ms`}
+      >
+        <div class="flex items-start gap-4">
+          <div class="text-4xl flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            {mod.icon}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500">Módulo {i + 1}</span>
+              <span class="module-status-badge text-[10px] font-bold px-2 py-0.5 rounded-full" data-module-id={mod.id}></span>
+            </div>
+            <h2 class="font-bold text-lg mb-1 group-hover:text-primary-500 transition-colors">{mod.title}</h2>
+            <p class="text-sm text-surface-500 dark:text-surface-400 line-clamp-2 mb-3">{mod.description}</p>
+            <div class="flex items-center gap-3">
+              <div class="flex-1">
+                <div class="h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-700 module-progress-bar" data-module-id={mod.id} style="width: 0%"></div>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-surface-500 module-progress-text" data-module-id={mod.id}>0%</span>
+            </div>
+            <div class="mt-2 text-xs text-surface-400 dark:text-surface-500">
+              {mod.sections.length} {mod.sections.length === 1 ? 'sección' : 'secciones'}
+            </div>
+          </div>
+        </div>
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary-500/5 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      </a>
+    ))}
+  </div>
+</Layout>
+
+<script>
+  import { $progress } from '../../lib/store';
+  import { modules } from '../../data/modules';
+
+  function updateProgress() {
+    const progress = $progress.get();
+    modules.forEach((mod) => {
+      const read = progress.modulesRead[mod.id] || [];
+      const pct = mod.sections.length > 0
+        ? Math.round((read.length / mod.sections.length) * 100)
+        : 0;
+
+      const bar = document.querySelector(`.module-progress-bar[data-module-id="${mod.id}"]`) as HTMLElement;
+      if (bar) bar.style.width = `${pct}%`;
+
+      const text = document.querySelector(`.module-progress-text[data-module-id="${mod.id}"]`);
+      if (text) text.textContent = `${pct}%`;
+
+      const badge = document.querySelector(`.module-status-badge[data-module-id="${mod.id}"]`);
+      if (badge) {
+        if (pct === 100) {
+          badge.textContent = '✅ Completado';
+          badge.className = 'module-status-badge text-[10px] font-bold px-2 py-0.5 rounded-full bg-success-500/15 text-success-600 dark:text-success-400';
+        } else if (pct > 0) {
+          badge.textContent = '📖 En progreso';
+          badge.className = 'module-status-badge text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500/15 text-accent-600 dark:text-accent-400';
+        } else {
+          badge.textContent = 'Pendiente';
+          badge.className = 'module-status-badge text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-500';
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', updateProgress);
+  $progress.subscribe(updateProgress);
+</script>

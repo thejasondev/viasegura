@@ -1,0 +1,311 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { modules, getModuleBySlug } from '../../data/modules';
+
+export function getStaticPaths() {
+  return modules.map((mod) => ({
+    params: { slug: mod.slug },
+    props: { module: mod },
+  }));
+}
+
+const { module } = Astro.props;
+const modIndex = modules.findIndex((m) => m.id === module.id);
+const nextModule = modules[modIndex + 1] || null;
+const prevModule = modules[modIndex - 1] || null;
+---
+
+<Layout title={module.title} activeNav="estudiar">
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 mb-6">
+    <a href="/estudiar" class="hover:text-primary-500 transition-colors">📚 Estudiar</a>
+    <span>›</span>
+    <span class="text-surface-900 dark:text-surface-100 font-medium">{module.icon} {module.shortTitle}</span>
+  </nav>
+
+  <!-- Module Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-4xl">{module.icon}</span>
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-surface-400">Módulo {modIndex + 1}</span>
+        <h1 class="text-2xl md:text-3xl font-bold">{module.title}</h1>
+      </div>
+    </div>
+    <p class="text-surface-500 dark:text-surface-400">{module.description}</p>
+    <div class="mt-4 flex items-center gap-3">
+      <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-700" id="module-overall-progress" style="width: 0%"></div>
+      </div>
+      <span class="text-sm font-semibold" id="module-overall-text">0%</span>
+    </div>
+  </div>
+
+  <!-- Section Navigation -->
+  <div class="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-hide" id="section-tabs">
+    {module.sections.map((section, i) => (
+      <button
+        class="section-tab flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium border border-surface-200 dark:border-surface-800 bg-surface-100 dark:bg-surface-900 hover:border-primary-500/50 transition-all whitespace-nowrap"
+        data-section-id={section.id}
+        data-index={i}
+      >
+        {i + 1}. {section.title}
+      </button>
+    ))}
+  </div>
+
+  <!-- Section Content -->
+  <div id="sections-container">
+    {module.sections.map((section, i) => (
+      <article
+        class="section-content hidden animate-fade-in"
+        data-section-id={section.id}
+        data-index={i}
+      >
+        <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8 mb-6">
+          <h2 class="text-xl font-bold mb-4">{section.title}</h2>
+          <div class="prose prose-sm dark:prose-invert max-w-none study-content" set:html={section.content} />
+        </div>
+
+        {section.keyPoints && section.keyPoints.length > 0 && (
+          <div class="bg-primary-500/5 border border-primary-500/20 rounded-2xl p-6 mb-6">
+            <h3 class="font-bold text-sm uppercase tracking-wider text-primary-500 mb-3 flex items-center gap-2">
+              <span>🔑</span> Puntos Clave
+            </h3>
+            <ul class="space-y-2">
+              {section.keyPoints.map((point) => (
+                <li class="flex items-start gap-2 text-sm">
+                  <span class="text-primary-500 mt-0.5">✓</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {section.tips && section.tips.length > 0 && (
+          <div class="bg-accent-500/5 border border-accent-500/20 rounded-2xl p-6 mb-6">
+            <h3 class="font-bold text-sm uppercase tracking-wider text-accent-500 mb-3 flex items-center gap-2">
+              <span>💡</span> Tip para el Examen
+            </h3>
+            {section.tips.map((tip) => (
+              <p class="text-sm">{tip}</p>
+            ))}
+          </div>
+        )}
+
+        <!-- Mark as Read & Navigation -->
+        <div class="flex items-center justify-between gap-4 mb-8">
+          <button
+            class="mark-read-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-success-500 text-white hover:bg-success-600 active:scale-95 transition-all shadow-lg shadow-success-500/20"
+            data-module-id={module.id}
+            data-section-id={section.id}
+          >
+            ✅ Marcar como leído
+          </button>
+
+          <div class="flex gap-2">
+            {i > 0 && (
+              <button class="nav-section-btn px-4 py-2.5 rounded-xl text-sm font-medium bg-surface-200 dark:bg-surface-800 hover:bg-surface-300 dark:hover:bg-surface-700 transition-all" data-target-index={i - 1}>
+                ← Anterior
+              </button>
+            )}
+            {i < module.sections.length - 1 && (
+              <button class="nav-section-btn px-4 py-2.5 rounded-xl text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-all" data-target-index={i + 1}>
+                Siguiente →
+              </button>
+            )}
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Module Navigation -->
+  <div class="flex items-center justify-between pt-6 border-t border-surface-200 dark:border-surface-800">
+    {prevModule ? (
+      <a href={`/estudiar/${prevModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
+        <span>←</span> {prevModule.icon} {prevModule.shortTitle}
+      </a>
+    ) : <div />}
+    {nextModule ? (
+      <a href={`/estudiar/${nextModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
+        {nextModule.icon} {nextModule.shortTitle} <span>→</span>
+      </a>
+    ) : (
+      <a href="/practica" class="flex items-center gap-2 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors">
+        ✍️ Ir a Práctica →
+      </a>
+    )}
+  </div>
+</Layout>
+
+<script define:vars={{ moduleId: module.id, sectionIds: module.sections.map(s => s.id), totalSections: module.sections.length }}>
+  // This runs at build time to pass props to client
+</script>
+
+<script>
+  import { $progress, markSectionRead, recordStudyActivity } from '../../lib/store';
+
+  let currentIndex = 0;
+
+  function showSection(index: number) {
+    const sections = document.querySelectorAll('.section-content');
+    const tabs = document.querySelectorAll('.section-tab');
+
+    sections.forEach((s, i) => {
+      if (i === index) {
+        s.classList.remove('hidden');
+      } else {
+        s.classList.add('hidden');
+      }
+    });
+
+    tabs.forEach((t, i) => {
+      if (i === index) {
+        t.classList.add('!bg-primary-500', '!text-white', '!border-primary-500');
+      } else {
+        t.classList.remove('!bg-primary-500', '!text-white', '!border-primary-500');
+      }
+    });
+
+    currentIndex = index;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateReadStatus() {
+    const progress = $progress.get();
+    const moduleId = document.querySelector('.mark-read-btn')?.getAttribute('data-module-id');
+    if (!moduleId) return;
+
+    const readSections = progress.modulesRead[moduleId] || [];
+    const totalSections = document.querySelectorAll('.section-content').length;
+    const pct = totalSections > 0 ? Math.round((readSections.length / totalSections) * 100) : 0;
+
+    const progressBar = document.getElementById('module-overall-progress') as HTMLElement;
+    if (progressBar) progressBar.style.width = `${pct}%`;
+
+    const progressText = document.getElementById('module-overall-text');
+    if (progressText) progressText.textContent = `${pct}%`;
+
+    // Update buttons
+    document.querySelectorAll('.mark-read-btn').forEach((btn) => {
+      const sectionId = btn.getAttribute('data-section-id')!;
+      if (readSections.includes(sectionId)) {
+        btn.textContent = '✅ Leído';
+        btn.classList.remove('bg-success-500', 'hover:bg-success-600', 'shadow-success-500/20');
+        btn.classList.add('bg-surface-300', 'dark:bg-surface-700', 'cursor-default');
+      }
+    });
+
+    // Update tabs
+    document.querySelectorAll('.section-tab').forEach((tab) => {
+      const sectionId = tab.getAttribute('data-section-id')!;
+      if (readSections.includes(sectionId)) {
+        tab.classList.add('border-success-500/30');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    showSection(0);
+    updateReadStatus();
+
+    // Tab clicks
+    document.querySelectorAll('.section-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const index = parseInt(tab.getAttribute('data-index') || '0');
+        showSection(index);
+      });
+    });
+
+    // Navigation buttons
+    document.querySelectorAll('.nav-section-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = parseInt(btn.getAttribute('data-target-index') || '0');
+        showSection(target);
+      });
+    });
+
+    // Mark as read
+    document.querySelectorAll('.mark-read-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const moduleId = btn.getAttribute('data-module-id')!;
+        const sectionId = btn.getAttribute('data-section-id')!;
+        markSectionRead(moduleId, sectionId);
+        recordStudyActivity();
+        updateReadStatus();
+      });
+    });
+  });
+
+  $progress.subscribe(updateReadStatus);
+</script>
+
+<style>
+  .study-content :global(p) {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+  .study-content :global(ul), .study-content :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  .study-content :global(li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  .study-content :global(strong) {
+    color: var(--color-primary-500);
+  }
+  .dark .study-content :global(strong) {
+    color: var(--color-primary-400);
+  }
+  .study-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+  .study-content :global(th) {
+    background-color: var(--color-surface-200);
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-surface-300);
+  }
+  .dark .study-content :global(th) {
+    background-color: var(--color-surface-800);
+    border-color: var(--color-surface-700);
+  }
+  .study-content :global(td) {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--color-surface-200);
+  }
+  .dark .study-content :global(td) {
+    border-color: var(--color-surface-800);
+  }
+  .study-content :global(dt) {
+    font-weight: 700;
+    margin-top: 0.75rem;
+    color: var(--color-primary-500);
+  }
+  .dark .study-content :global(dt) {
+    color: var(--color-primary-400);
+  }
+  .study-content :global(dd) {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-surface-600);
+  }
+  .dark .study-content :global(dd) {
+    color: var(--color-surface-400);
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

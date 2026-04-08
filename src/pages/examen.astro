@@ -1,0 +1,347 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { questions } from '../data/questions';
+---
+
+<Layout title="Simulacro de Examen" activeNav="examen">
+  <!-- Instructions Screen -->
+  <div id="exam-instructions">
+    <div class="text-center mb-8">
+      <div class="text-6xl mb-4 animate-bounce-in">📝</div>
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">Simulacro de Examen</h1>
+      <p class="text-surface-500 dark:text-surface-400 max-w-md mx-auto">
+        Experimenta un examen lo más parecido posible al real. ¡Buena suerte!
+      </p>
+    </div>
+
+    <div class="max-w-lg mx-auto">
+      <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+        <h2 class="font-bold mb-4 flex items-center gap-2"><span>📋</span> Instrucciones</h2>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+            <span>El examen tiene <strong class="text-primary-500">20 preguntas</strong> de selección múltiple.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+            <span>Tienes <strong class="text-primary-500">30 minutos</strong> para completarlo.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+            <span>Necesitas <strong class="text-success-500">14 correctas (70%)</strong> para aprobar.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-lg bg-accent-500/10 text-accent-500 flex items-center justify-center text-xs font-bold flex-shrink-0">!</span>
+            <span><strong class="text-accent-600 dark:text-accent-400">No hay retroalimentación</strong> hasta entregar el examen.</span>
+          </li>
+        </ul>
+      </div>
+
+      <button id="start-exam" class="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20">
+        🚀 Comenzar Examen
+      </button>
+    </div>
+  </div>
+
+  <!-- Exam Screen -->
+  <div id="exam-screen" class="hidden">
+    <!-- Top Bar -->
+    <div class="sticky top-14 z-30 -mx-4 px-4 py-3 glass border-b border-surface-200 dark:border-surface-800 mb-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-bold" id="exam-counter">1/20</span>
+          <div class="w-32 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-primary-500 to-success-500 rounded-full transition-all duration-500" id="exam-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xl">⏱️</span>
+          <span class="font-mono font-bold text-lg" id="exam-timer">30:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8 mb-6">
+      <h2 class="text-lg md:text-xl font-bold mb-6" id="exam-q-text"></h2>
+      <div class="space-y-3" id="exam-q-options"></div>
+    </div>
+
+    <!-- Question Navigator -->
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-surface-400 mb-3">Navegación</div>
+      <div class="flex flex-wrap gap-2" id="exam-nav-dots"></div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex gap-3">
+      <button id="exam-prev" class="flex-1 py-3 rounded-xl font-semibold bg-surface-200 dark:bg-surface-800 hover:bg-surface-300 dark:hover:bg-surface-700 transition-all">← Anterior</button>
+      <button id="exam-next" class="flex-1 py-3 rounded-xl font-semibold bg-primary-500 text-white hover:bg-primary-600 transition-all">Siguiente →</button>
+      <button id="exam-finish" class="hidden flex-1 py-3 rounded-xl font-semibold bg-success-500 text-white hover:bg-success-600 transition-all">✅ Entregar</button>
+    </div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="exam-results" class="hidden">
+    <div class="text-center mb-8 animate-scale-in">
+      <div class="text-7xl mb-4" id="exam-result-emoji">🎉</div>
+      <h2 class="text-3xl md:text-4xl font-black mb-2" id="exam-result-title"></h2>
+      <p class="text-lg text-surface-500 dark:text-surface-400" id="exam-result-subtitle"></p>
+    </div>
+
+    <!-- Score Ring -->
+    <div class="flex justify-center mb-8">
+      <div class="relative w-40 h-40">
+        <svg class="w-full h-full" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="8" class="text-surface-200 dark:text-surface-800" />
+          <circle cx="50" cy="50" r="45" fill="none" stroke-width="8" stroke-linecap="round" class="progress-ring-circle text-primary-500" id="score-ring" style="stroke-dasharray: 283; stroke-dashoffset: 283" />
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-3xl font-black" id="score-ring-text">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div>
+          <div class="text-2xl font-black text-success-500" id="exam-r-correct">0</div>
+          <div class="text-xs text-surface-500">Correctas</div>
+        </div>
+        <div>
+          <div class="text-2xl font-black text-danger-500" id="exam-r-wrong">0</div>
+          <div class="text-xs text-surface-500">Incorrectas</div>
+        </div>
+        <div>
+          <div class="text-2xl font-black text-surface-500" id="exam-r-unanswered">0</div>
+          <div class="text-xs text-surface-500">Sin responder</div>
+        </div>
+        <div>
+          <div class="text-2xl font-black text-accent-500" id="exam-r-time">00:00</div>
+          <div class="text-xs text-surface-500">Tiempo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Section -->
+    <div class="mb-6" id="exam-review-section">
+      <h3 class="font-bold mb-3">📖 Revisión de Respuestas</h3>
+      <div class="space-y-3" id="exam-review-list"></div>
+    </div>
+
+    <div class="flex gap-3">
+      <a href="/examen" class="flex-1 py-3 rounded-xl font-semibold bg-primary-500 text-white text-center hover:bg-primary-600 transition-all">📝 Nuevo Examen</a>
+      <a href="/estudiar" class="flex-1 py-3 rounded-xl font-semibold bg-surface-200 dark:bg-surface-800 text-center hover:bg-surface-300 dark:hover:bg-surface-700 transition-all">📚 Estudiar</a>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { questions as allQuestions } from '../data/questions';
+  import { modules } from '../data/modules';
+  import type { Question } from '../lib/types';
+  import { selectExamQuestions, calculateResults, createQuizSession, formatTime } from '../lib/quiz-engine';
+  import { addQuizResult, updateQuestionConfidence, recordStudyActivity } from '../lib/store';
+
+  let examQuestions: Question[] = [];
+  let currentIndex = 0;
+  let answers: Record<string, number> = {};
+  let timerInterval: ReturnType<typeof setInterval>;
+  let timeRemaining = 30 * 60; // 30 minutes
+
+  document.getElementById('start-exam')?.addEventListener('click', () => {
+    examQuestions = selectExamQuestions(allQuestions, 20);
+    currentIndex = 0;
+    answers = {};
+    timeRemaining = 30 * 60;
+    recordStudyActivity();
+
+    document.getElementById('exam-instructions')!.classList.add('hidden');
+    document.getElementById('exam-screen')!.classList.remove('hidden');
+
+    buildNavDots();
+    showExamQuestion();
+    startTimer();
+  });
+
+  function startTimer() {
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      timeRemaining--;
+      updateTimerDisplay();
+      if (timeRemaining <= 0) {
+        clearInterval(timerInterval);
+        finishExam();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const el = document.getElementById('exam-timer')!;
+    el.textContent = formatTime(timeRemaining);
+    if (timeRemaining <= 300) {
+      el.classList.add('text-danger-500');
+    }
+  }
+
+  function buildNavDots() {
+    const container = document.getElementById('exam-nav-dots')!;
+    container.innerHTML = '';
+    examQuestions.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'exam-nav-dot w-8 h-8 rounded-lg text-xs font-bold border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all';
+      dot.textContent = String(i + 1);
+      dot.addEventListener('click', () => {
+        currentIndex = i;
+        showExamQuestion();
+      });
+      container.appendChild(dot);
+    });
+  }
+
+  function updateNavDots() {
+    document.querySelectorAll('.exam-nav-dot').forEach((dot, i) => {
+      dot.className = 'exam-nav-dot w-8 h-8 rounded-lg text-xs font-bold border transition-all ';
+      if (i === currentIndex) {
+        dot.className += 'border-primary-500 bg-primary-500 text-white';
+      } else if (answers[examQuestions[i].id] !== undefined) {
+        dot.className += 'border-success-500/50 bg-success-500/10 text-success-600 dark:text-success-400';
+      } else {
+        dot.className += 'border-surface-200 dark:border-surface-800 hover:border-primary-500/50';
+      }
+    });
+  }
+
+  function showExamQuestion() {
+    const q = examQuestions[currentIndex];
+
+    document.getElementById('exam-q-text')!.textContent = q.text;
+    document.getElementById('exam-counter')!.textContent = `${currentIndex + 1}/20`;
+
+    const progressBar = document.getElementById('exam-progress-bar') as HTMLElement;
+    progressBar.style.width = `${((currentIndex + 1) / examQuestions.length) * 100}%`;
+
+    const optionsEl = document.getElementById('exam-q-options')!;
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      const isSelected = answers[q.id] === i;
+      btn.className = `exam-option w-full text-left p-4 rounded-xl border-2 transition-all font-medium ${isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-surface-200 dark:border-surface-800 hover:border-primary-500/50'}`;
+      btn.innerHTML = `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg ${isSelected ? 'bg-primary-500 text-white' : 'bg-surface-200 dark:bg-surface-800'} text-xs font-bold mr-3">${String.fromCharCode(65 + i)}</span>${opt}`;
+      btn.addEventListener('click', () => {
+        answers[q.id] = i;
+        showExamQuestion(); // refresh to show selection
+      });
+      optionsEl.appendChild(btn);
+    });
+
+    // Show/hide buttons
+    const prevBtn = document.getElementById('exam-prev')!;
+    const nextBtn = document.getElementById('exam-next')!;
+    const finishBtn = document.getElementById('exam-finish')!;
+
+    prevBtn.style.display = currentIndex > 0 ? '' : 'none';
+
+    if (currentIndex === examQuestions.length - 1) {
+      nextBtn.classList.add('hidden');
+      finishBtn.classList.remove('hidden');
+    } else {
+      nextBtn.classList.remove('hidden');
+      finishBtn.classList.add('hidden');
+    }
+
+    updateNavDots();
+  }
+
+  document.getElementById('exam-prev')?.addEventListener('click', () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      showExamQuestion();
+    }
+  });
+
+  document.getElementById('exam-next')?.addEventListener('click', () => {
+    if (currentIndex < examQuestions.length - 1) {
+      currentIndex++;
+      showExamQuestion();
+    }
+  });
+
+  document.getElementById('exam-finish')?.addEventListener('click', () => {
+    const unanswered = examQuestions.filter((q) => answers[q.id] === undefined).length;
+    if (unanswered > 0) {
+      if (!confirm(`Tienes ${unanswered} pregunta(s) sin responder. ¿Deseas entregar de todas formas?`)) {
+        return;
+      }
+    }
+    finishExam();
+  });
+
+  function finishExam() {
+    clearInterval(timerInterval);
+
+    const session = createQuizSession('exam', examQuestions, undefined, 30);
+    session.answers = answers;
+    session.completedAt = new Date().toISOString();
+    const result = calculateResults(session, allQuestions);
+    addQuizResult(result);
+
+    // Update confidence
+    examQuestions.forEach((q) => {
+      if (answers[q.id] !== undefined) {
+        updateQuestionConfidence(q.id, answers[q.id] === q.correctIndex);
+      }
+    });
+
+    document.getElementById('exam-screen')!.classList.add('hidden');
+    document.getElementById('exam-results')!.classList.remove('hidden');
+
+    // Update UI
+    const passed = result.passed;
+    document.getElementById('exam-result-emoji')!.textContent = result.score === 100 ? '🌟' : passed ? '🎉' : '😔';
+    document.getElementById('exam-result-title')!.textContent = result.score === 100 ? '¡PERFECTO!' : passed ? '¡APROBADO!' : 'NO APROBADO';
+    document.getElementById('exam-result-subtitle')!.textContent = passed
+      ? `Obtuviste ${result.score}%. ¡Estás listo para el examen real!`
+      : `Obtuviste ${result.score}%. Necesitas 70% para aprobar. ¡No te rindas!`;
+
+    document.getElementById('exam-r-correct')!.textContent = String(result.correctAnswers);
+    document.getElementById('exam-r-wrong')!.textContent = String(result.totalQuestions - result.correctAnswers - examQuestions.filter((q) => answers[q.id] === undefined).length);
+    document.getElementById('exam-r-unanswered')!.textContent = String(examQuestions.filter((q) => answers[q.id] === undefined).length);
+    document.getElementById('exam-r-time')!.textContent = formatTime(result.timeSpent);
+
+    // Animate score ring
+    const ring = document.getElementById('score-ring') as SVGCircleElement;
+    const circumference = 2 * Math.PI * 45;
+    const offset = circumference - (result.score / 100) * circumference;
+    setTimeout(() => {
+      ring.style.strokeDashoffset = String(offset);
+      if (passed) ring.classList.add('text-success-500');
+      else ring.classList.add('text-danger-500');
+    }, 100);
+    document.getElementById('score-ring-text')!.textContent = `${result.score}%`;
+
+    // Build review list
+    const reviewEl = document.getElementById('exam-review-list')!;
+    reviewEl.innerHTML = '';
+    examQuestions.forEach((q, i) => {
+      const userAnswer = answers[q.id];
+      const isCorrect = userAnswer === q.correctIndex;
+      const mod = modules.find((m) => m.id === q.moduleId);
+
+      const div = document.createElement('div');
+      div.className = `p-4 rounded-xl border ${isCorrect ? 'border-success-500/20 bg-success-500/5' : userAnswer === undefined ? 'border-surface-200 dark:border-surface-800' : 'border-danger-500/20 bg-danger-500/5'}`;
+      div.innerHTML = `
+        <div class="flex items-start gap-3">
+          <span class="text-lg">${isCorrect ? '✅' : userAnswer === undefined ? '⬜' : '❌'}</span>
+          <div class="flex-1">
+            <div class="font-semibold text-sm mb-1">${i + 1}. ${q.text}</div>
+            ${userAnswer !== undefined && !isCorrect ? `<div class="text-xs text-danger-500 mb-1">Tu respuesta: ${q.options[userAnswer]}</div>` : ''}
+            <div class="text-xs ${isCorrect ? 'text-success-500' : 'text-primary-500'}">Correcta: ${q.options[q.correctIndex]}</div>
+            <div class="text-xs text-surface-400 mt-1">${q.explanation}</div>
+          </div>
+        </div>
+      `;
+      reviewEl.appendChild(div);
+    });
+  }
+</script>
