@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Logo from '../components/ui/Logo.astro';
 import { pwaInfo } from 'virtual:pwa-info';
 import { ClientRouter } from 'astro:transitions';
+import Analytics from '@vercel/analytics/astro'
 
 export interface Props {
   title: string;
@@ -37,6 +38,7 @@ const {
 
     <title>{title} | VíaSegura</title>
     <ClientRouter />
+    <Analytics />
 
     {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
 

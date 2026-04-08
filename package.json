@@ -16,6 +16,7 @@
     "@nanostores/persistent": "^1.3.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vercel/analytics": "^2.0.1",
     "astro": "^5.18.1",
     "canvas-confetti": "^1.9.4",
     "nanostores": "^1.2.0",

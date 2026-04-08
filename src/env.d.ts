@@ -28,3 +28,8 @@ declare module 'canvas-confetti' {
   const confetti: any;
   export default confetti;
 }
+
+declare module '@vercel/analytics/astro' {
+  const Analytics: any;
+  export default Analytics;
+}
