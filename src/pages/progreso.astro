@@ -181,6 +181,15 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', updateProgress);
-  $progress.subscribe(updateProgress);
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('pg-streak')) {
+      updateProgress();
+    }
+  });
+
+  $progress.listen(() => {
+    if (document.getElementById('pg-streak')) {
+      updateProgress();
+    }
+  });
 </script>
