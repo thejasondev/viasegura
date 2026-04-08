@@ -60,9 +60,8 @@ const {
   </head>
   <body class="min-h-screen bg-surface-50 text-surface-900 dark:bg-surface-950 dark:text-surface-100 transition-colors duration-300 pb-20 md:pb-0">
     <!-- Header -->
-    <header class="sticky top-0 z-50 safe-top">
-      <div class="bg-white/85 dark:bg-surface-950/85 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 shadow-xs">
-        <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+    <header class="sticky top-0 z-50 bg-white/85 dark:bg-surface-950/85 backdrop-blur-xl border-b border-surface-200 dark:border-surface-800 shadow-xs safe-top">
+      <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <a href="/" class="flex items-center gap-2.5 group" id="header-logo">
             <Logo size="md" class="text-white drop-shadow-sm group-hover:scale-105 transition-transform duration-300" />
             <span class="font-bold text-xl tracking-tight text-surface-900 dark:text-white group-hover:opacity-80 transition-opacity">
@@ -141,10 +140,9 @@ const {
     </main>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 safe-bottom" id="mobile-nav">
-      <div class="bg-white/90 dark:bg-surface-950/90 backdrop-blur-xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.4)]">
-        <div class="flex items-center justify-around h-16 px-2">
-          <a href="/" class:list={[
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-surface-950/90 backdrop-blur-xl border-t border-surface-200 dark:border-surface-800 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.4)] safe-bottom" id="mobile-nav">
+      <div class="flex items-center justify-around h-16 px-2">
+        <a href="/" class:list={[
             "flex flex-col items-center justify-center p-2 min-w-[3.5rem] transition-colors",
             activeNav === 'home' ? "text-primary-600 dark:text-primary-400" : "text-surface-500 dark:text-surface-400"
           ]}>
