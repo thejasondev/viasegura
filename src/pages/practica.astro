@@ -139,41 +139,62 @@ import { questions } from '../data/questions';
   let answers: Record<string, number> = {};
   let answered = false;
 
-  // Topic selection
-  document.querySelectorAll('.topic-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.topic-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
-      btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
-      selectedModule = btn.getAttribute('data-module') || 'all';
+  function initPractice() {
+    if (!document.getElementById('setup-screen')) return;
+
+    // Topic selection
+    document.querySelectorAll('.topic-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.topic-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
+        btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
+        selectedModule = btn.getAttribute('data-module') || 'all';
+      });
     });
-  });
 
-  // Count selection
-  document.querySelectorAll('.count-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.count-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
-      btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
-      selectedCount = parseInt(btn.getAttribute('data-count') || '10');
+    // Count selection
+    document.querySelectorAll('.count-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.count-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
+        btn.classList.add('active', '!border-primary-500', '!bg-primary-500/10');
+        selectedCount = parseInt(btn.getAttribute('data-count') || '10');
+      });
     });
-  });
 
-  // Start practice
-  document.getElementById('start-practice')?.addEventListener('click', () => {
-    const moduleId = selectedModule === 'all' ? undefined : selectedModule;
-    currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
-    if (currentQuestions.length === 0) {
-      alert('No hay suficientes preguntas para este tema.');
-      return;
-    }
-    currentIndex = 0;
-    answers = {};
-    answered = false;
-    recordStudyActivity();
+    // Start practice
+    document.getElementById('start-practice')?.addEventListener('click', () => {
+      const moduleId = selectedModule === 'all' ? undefined : selectedModule;
+      currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+      if (currentQuestions.length === 0) {
+        alert('No hay suficientes preguntas para este tema.');
+        return;
+      }
+      currentIndex = 0;
+      answers = {};
+      answered = false;
+      recordStudyActivity();
 
-    document.getElementById('setup-screen')!.classList.add('hidden');
-    document.getElementById('quiz-screen')!.classList.remove('hidden');
-    showQuestion();
-  });
+      document.getElementById('setup-screen')!.classList.add('hidden');
+      document.getElementById('quiz-screen')!.classList.remove('hidden');
+      showQuestion();
+    });
+
+    document.getElementById('next-btn')?.addEventListener('click', () => {
+      currentIndex++;
+      if (currentIndex >= currentQuestions.length) {
+        showResults();
+      } else {
+        showQuestion();
+      }
+    });
+
+    document.getElementById('retry-btn')?.addEventListener('click', () => {
+      currentIndex = 0;
+      answers = {};
+      document.getElementById('results-screen')!.classList.add('hidden');
+      document.getElementById('quiz-screen')!.classList.remove('hidden');
+      showQuestion();
+    });
+  }
 
   function showQuestion() {
     const q = currentQuestions[currentIndex];
@@ -248,15 +269,6 @@ import { questions } from '../data/questions';
     progressBar.style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
   }
 
-  document.getElementById('next-btn')?.addEventListener('click', () => {
-    currentIndex++;
-    if (currentIndex >= currentQuestions.length) {
-      showResults();
-    } else {
-      showQuestion();
-    }
-  });
-
   function showResults() {
     const session = createQuizSession('practice', currentQuestions, selectedModule === 'all' ? undefined : selectedModule);
     session.answers = answers;
@@ -281,11 +293,5 @@ import { questions } from '../data/questions';
     document.getElementById('result-wrong')!.textContent = String(result.totalQuestions - result.correctAnswers);
   }
 
-  document.getElementById('retry-btn')?.addEventListener('click', () => {
-    currentIndex = 0;
-    answers = {};
-    document.getElementById('results-screen')!.classList.add('hidden');
-    document.getElementById('quiz-screen')!.classList.remove('hidden');
-    showQuestion();
-  });
+  document.addEventListener('astro:page-load', initPractice);
 </script>

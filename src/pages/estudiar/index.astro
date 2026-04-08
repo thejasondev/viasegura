@@ -81,6 +81,16 @@ import { modules } from '../../data/modules';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', updateProgress);
-  $progress.subscribe(updateProgress);
+  document.addEventListener('astro:page-load', () => {
+    // Only run if we are on the studying index page
+    if (document.querySelector('.module-progress-bar')) {
+      updateProgress();
+    }
+  });
+
+  $progress.listen(() => {
+    if (document.querySelector('.module-progress-bar')) {
+      updateProgress();
+    }
+  });
 </script>
