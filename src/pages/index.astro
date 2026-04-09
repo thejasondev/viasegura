@@ -4,6 +4,9 @@ import ModuleCard from '../components/study/ModuleCard.astro';
 import Logo from '../components/ui/Logo.astro';
 import SignalIcon from '../components/SignalIcon.astro';
 import { modules } from '../data/modules';
+import { getTodayTip } from '../data/tips';
+
+const tip = getTodayTip();
 ---
 
 <Layout title="Inicio" activeNav="home">
@@ -59,6 +62,37 @@ import { modules } from '../data/modules';
       <div class="text-2xl font-bold text-danger-500" id="stat-badges">0</div>
       <div class="text-xs text-surface-500 dark:text-surface-400">Logros</div>
     </div>
+  </section>
+
+  <!-- Tip del Día -->
+  <section class="mb-8" id="daily-tip">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent-500/10 via-primary-500/5 to-success-500/10 border border-accent-500/20 p-5">
+      <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-accent-500/10 to-transparent rounded-bl-full"></div>
+      <div class="relative flex items-start gap-3">
+        <span class="text-2xl flex-shrink-0 mt-0.5">{tip.icon}</span>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-accent-500">💡 Tip del Día</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-accent-500/10 text-accent-600 dark:text-accent-400 font-medium capitalize">{tip.category}</span>
+          </div>
+          <p class="text-sm leading-relaxed">{tip.text}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Smart Review CTA -->
+  <section class="mb-8" id="smart-review-section">
+    <a href="/practica?modo=repaso" class="group hidden items-center gap-4 p-5 rounded-2xl bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-500/20 hover:border-primary-500/40 transition-all hover:shadow-lg" id="smart-review-cta">
+      <div class="w-12 h-12 rounded-xl bg-primary-500/15 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+        <span class="text-2xl">🧠</span>
+      </div>
+      <div class="flex-1">
+        <div class="font-bold text-sm">Repaso Inteligente</div>
+        <div class="text-xs text-surface-500 dark:text-surface-400"><span id="review-count">0</span> preguntas pendientes de repasar hoy</div>
+      </div>
+      <span class="text-primary-500 font-semibold text-sm group-hover:translate-x-1 transition-transform">Iniciar →</span>
+    </a>
   </section>
 
   <!-- Study Modules Preview -->
@@ -174,6 +208,28 @@ import { modules } from '../data/modules';
         bar.style.width = `${pct}%`;
       }
     });
+
+    // Smart Review: count pending reviews from SM-2
+    const confidence = progress.questionConfidence;
+    const now = new Date();
+    let pendingReviews = 0;
+    for (const conf of Object.values(confidence)) {
+      if (conf.confidence === 'low' || new Date(conf.nextReview) <= now) {
+        pendingReviews++;
+      }
+    }
+    const reviewCta = document.getElementById('smart-review-cta');
+    const reviewCountEl = document.getElementById('review-count');
+    if (reviewCta && reviewCountEl) {
+      if (pendingReviews > 0) {
+        reviewCountEl.textContent = String(pendingReviews);
+        reviewCta.classList.remove('hidden');
+        reviewCta.classList.add('flex');
+      } else {
+        reviewCta.classList.add('hidden');
+        reviewCta.classList.remove('flex');
+      }
+    }
   }
 
   document.addEventListener('astro:page-load', () => {

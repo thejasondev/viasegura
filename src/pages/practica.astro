@@ -13,6 +13,18 @@ import { questions } from '../data/questions';
       <p class="text-surface-500 dark:text-surface-400">Selecciona un tema y la cantidad de preguntas. Recibirás retroalimentación inmediata.</p>
     </div>
 
+    <!-- Smart Review Mode Banner -->
+    <div id="review-mode-banner" class="hidden mb-6 p-4 rounded-2xl bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-500/20">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🧠</span>
+        <div class="flex-1">
+          <div class="font-bold text-sm">Modo Repaso Inteligente</div>
+          <div class="text-xs text-surface-500 dark:text-surface-400">Se priorizarán las preguntas que más necesitas repasar según tu historial.</div>
+        </div>
+        <button id="exit-review-mode" class="text-xs text-surface-400 hover:text-primary-500 underline">Salir</button>
+      </div>
+    </div>
+
     <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
       <h2 class="font-bold mb-4">Selecciona el Tema</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2" id="module-select">
@@ -49,6 +61,19 @@ import { questions } from '../data/questions';
       </div>
     </div>
 
+    <!-- Timer Toggle -->
+    <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="font-bold">Modo Contrarreloj</h2>
+          <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">⏱️ Entrena bajo presión como en el examen real</p>
+        </div>
+        <button id="timer-toggle" class="relative w-14 h-8 rounded-full bg-surface-300 dark:bg-surface-700 transition-colors" data-active="false">
+          <div class="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform" id="timer-toggle-dot"></div>
+        </button>
+      </div>
+    </div>
+
     <button id="start-practice" class="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20">
       🚀 Comenzar Práctica
     </button>
@@ -56,12 +81,13 @@ import { questions } from '../data/questions';
 
   <!-- Quiz Screen -->
   <div id="quiz-screen" class="hidden">
-    <!-- Progress -->
+    <!-- Progress + Timer -->
     <div class="flex items-center gap-4 mb-6">
       <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
         <div class="h-full bg-gradient-to-r from-primary-500 to-success-500 rounded-full transition-all duration-500" id="quiz-progress-bar" style="width: 0%"></div>
       </div>
       <span class="text-sm font-bold" id="quiz-counter">1/10</span>
+      <span class="text-sm font-mono font-bold text-accent-500 hidden" id="practice-timer">⏱️ 00:00</span>
     </div>
 
     <!-- Question -->
@@ -131,7 +157,7 @@ import { questions } from '../data/questions';
   import { questions as allQuestions } from '../data/questions';
   import { modules } from '../data/modules';
   import type { Question, QuizResult } from '../lib/types';
-  import { selectPracticeQuestions, calculateResults, createQuizSession } from '../lib/quiz-engine';
+  import { selectPracticeQuestions, calculateResults, createQuizSession, formatTime } from '../lib/quiz-engine';
   import { addQuizResult, updateQuestionConfidence, recordStudyActivity, $progress } from '../lib/store';
   import { generateId } from '../lib/storage';
 
@@ -141,9 +167,42 @@ import { questions } from '../data/questions';
   let currentIndex = 0;
   let answers: Record<string, number> = {};
   let answered = false;
+  let timerEnabled = false;
+  let timerInterval: ReturnType<typeof setInterval> | null = null;
+  let timeRemaining = 0;
+  let reviewMode = false;
 
   function initPractice() {
     if (!document.getElementById('setup-screen')) return;
+
+    // Check for review mode from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('modo') === 'repaso') {
+      reviewMode = true;
+      document.getElementById('review-mode-banner')?.classList.remove('hidden');
+    }
+
+    document.getElementById('exit-review-mode')?.addEventListener('click', () => {
+      reviewMode = false;
+      document.getElementById('review-mode-banner')?.classList.add('hidden');
+      window.history.replaceState({}, '', '/practica');
+    });
+
+    // Timer toggle
+    const timerToggle = document.getElementById('timer-toggle');
+    const timerDot = document.getElementById('timer-toggle-dot');
+    timerToggle?.addEventListener('click', () => {
+      timerEnabled = !timerEnabled;
+      if (timerEnabled) {
+        timerToggle.classList.remove('bg-surface-300', 'dark:bg-surface-700');
+        timerToggle.classList.add('bg-primary-500');
+        if (timerDot) timerDot.style.transform = 'translateX(1.5rem)';
+      } else {
+        timerToggle.classList.add('bg-surface-300', 'dark:bg-surface-700');
+        timerToggle.classList.remove('bg-primary-500');
+        if (timerDot) timerDot.style.transform = 'translateX(0)';
+      }
+    });
 
     // Topic selection
     document.querySelectorAll('.topic-btn').forEach((btn) => {
@@ -166,7 +225,23 @@ import { questions } from '../data/questions';
     // Start practice
     document.getElementById('start-practice')?.addEventListener('click', () => {
       const moduleId = selectedModule === 'all' ? undefined : selectedModule;
-      currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+
+      if (reviewMode) {
+        // In review mode, prioritize weak questions heavily
+        const confidence = $progress.get().questionConfidence;
+        const weakIds = Object.values(confidence)
+          .filter(c => c.confidence === 'low' || new Date(c.nextReview) <= new Date())
+          .map(c => c.questionId);
+        const weakPool = allQuestions.filter(q => weakIds.includes(q.id));
+        if (weakPool.length > 0) {
+          currentQuestions = weakPool.slice(0, selectedCount);
+        } else {
+          currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+        }
+      } else {
+        currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+      }
+
       if (currentQuestions.length === 0) {
         alert('No hay suficientes preguntas para este tema.');
         return;
@@ -175,6 +250,16 @@ import { questions } from '../data/questions';
       answers = {};
       answered = false;
       recordStudyActivity();
+
+      // Timer setup
+      if (timerEnabled) {
+        const timeLimits: Record<number, number> = { 5: 180, 10: 360, 15: 540 };
+        timeRemaining = timeLimits[selectedCount] || selectedCount * 36;
+        startPracticeTimer();
+        document.getElementById('practice-timer')?.classList.remove('hidden');
+      } else {
+        document.getElementById('practice-timer')?.classList.add('hidden');
+      }
 
       document.getElementById('setup-screen')!.classList.add('hidden');
       document.getElementById('quiz-screen')!.classList.remove('hidden');
@@ -272,7 +357,26 @@ import { questions } from '../data/questions';
     progressBar.style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
   }
 
+  function startPracticeTimer() {
+    const timerEl = document.getElementById('practice-timer');
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timeRemaining--;
+      if (timerEl) timerEl.textContent = `⏱️ ${formatTime(timeRemaining)}`;
+      if (timeRemaining <= 30 && timerEl) {
+        timerEl.classList.add('text-danger-500', 'animate-pulse');
+        timerEl.classList.remove('text-accent-500');
+      }
+      if (timeRemaining <= 0) {
+        if (timerInterval) clearInterval(timerInterval);
+        showResults();
+      }
+    }, 1000);
+  }
+
   function showResults() {
+    if (timerInterval) clearInterval(timerInterval);
+
     const session = createQuizSession('practice', currentQuestions, selectedModule === 'all' ? undefined : selectedModule);
     session.answers = answers;
     session.completedAt = new Date().toISOString();
