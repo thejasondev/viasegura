@@ -102,12 +102,52 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'streak',
   },
   {
-    id: 'signal_master',
-    title: 'Señalero',
-    description: 'Responde correctamente preguntas de todas las señales',
-    icon: '🚦',
-    condition: 'Dominar las señales de tránsito',
+    id: 'quiz_10',
+    title: 'Estudiante Frecuente',
+    description: 'Completa 10 sesiones de práctica rápida',
+    icon: '📚',
+    condition: 'Completar 10 quizzes de práctica',
+    category: 'quiz',
+  },
+  {
+    id: 'quiz_master_50',
+    title: 'Medio Centenar',
+    description: 'Responde correctamente 50 preguntas en total (Práctica)',
+    icon: '🎯',
+    condition: 'Acumular 50 aciertos en prácticas',
     category: 'mastery',
+  },
+  {
+    id: 'exam_veteran',
+    title: 'Veterano del Examen',
+    description: 'Aprueba 10 simulacros de examen',
+    icon: '🎖️',
+    condition: 'Aprobar 10 exámenes',
+    category: 'mastery',
+  },
+  {
+    id: 'half_journey',
+    title: 'A Mitad de Camino',
+    description: 'Lee el 50% de las secciones de estudio',
+    icon: '🧗',
+    condition: 'Progreso de lectura superior al 50%',
+    category: 'study',
+  },
+  {
+    id: 'by_a_hair',
+    title: 'Por un Pelo',
+    description: 'Aprueba un examen raspando con puntaje exacto al mínimo (70%)',
+    icon: '😅',
+    condition: 'Puntaje exacto del 70% en examen',
+    category: 'quiz',
+  },
+  {
+    id: 'signal_theory',
+    title: 'Experto en Señales',
+    description: 'Completa al 100% el Módulo de Señalización Vial',
+    icon: '🚦',
+    condition: 'Completar lecturas del módulo 4',
+    category: 'study',
   },
 ];
 
@@ -139,26 +179,50 @@ export function checkAchievements(
     }
   }
 
-  // All modules completed
-  const completedModules = Object.entries(progress.modulesRead).filter(
-    ([moduleId, sections]) => {
-      const total = moduleSectionCounts[moduleId] || 0;
-      return total > 0 && sections.length >= total;
+  // All modules completed & 50% completion
+  let totalRead = 0;
+  let totalAvailable = 0;
+  let completedModules = 0;
+  
+  for (const [moduleId, sections] of Object.entries(progress.modulesRead)) {
+    const total = moduleSectionCounts[moduleId] || 0;
+    if (total > 0) {
+      totalAvailable += total;
+      totalRead += sections.length;
+      if (sections.length >= total) {
+        completedModules++;
+        // Check for specific signal module (using 'mod-4')
+        if (moduleId === 'mod-4') tryUnlock('signal_theory');
+      }
     }
-  ).length;
+  }
+
   if (completedModules >= moduleCount) tryUnlock('all_modules');
+  if (totalAvailable > 0 && totalRead >= Math.ceil(totalAvailable / 2)) {
+    tryUnlock('half_journey');
+  }
 
   // Quiz achievements
   if (progress.quizHistory.length >= 1) tryUnlock('first_quiz');
+  if (progress.quizHistory.length >= 10) tryUnlock('quiz_10');
   if (progress.quizHistory.some((q) => q.score === 100)) tryUnlock('quiz_ace');
+  
+  // Total correct answers in practice
+  let totalCorrectAnswers = 0;
+  progress.quizHistory.forEach(q => {
+    totalCorrectAnswers += Math.round((q.score / 100) * q.totalQuestions);
+  });
+  if (totalCorrectAnswers >= 50) tryUnlock('quiz_master_50');
 
   // Exam achievements
   if (progress.examHistory.length >= 1) tryUnlock('first_exam');
   if (progress.examHistory.some((e) => e.passed)) tryUnlock('exam_pass');
   if (progress.examHistory.some((e) => e.score === 100)) tryUnlock('exam_perfect');
+  if (progress.examHistory.some((e) => Math.round(e.score) === 70)) tryUnlock('by_a_hair');
 
   const passedExams = progress.examHistory.filter((e) => e.passed).length;
   if (passedExams >= 5) tryUnlock('five_exams_passed');
+  if (passedExams >= 10) tryUnlock('exam_veteran');
 
   // Streak achievements
   if (progress.streak.current >= 3 || progress.streak.longest >= 3)
