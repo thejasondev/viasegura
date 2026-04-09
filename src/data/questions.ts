@@ -280,6 +280,28 @@ export const questions: Question[] = [
     explanation: 'El conductor debe llevar siempre la licencia de conducción y el documento del vehículo.',
   },
 
+  {
+    id: 'q3-16', moduleId: 'mod-3', difficulty: 'hard', tags: ['velocidad'],
+    text: '¿Cuál es la velocidad máxima permitida al dar marcha atrás o salir de un garaje?',
+    options: ['10 km/h', '20 km/h', '30 km/h', '40 km/h'],
+    correctIndex: 1,
+    explanation: 'La velocidad máxima para dar marcha atrás, salir de garajes o conducir equipos agrícolas en zona urbana es de 20 km/h.',
+  },
+  {
+    id: 'q3-17', moduleId: 'mod-3', difficulty: 'hard', tags: ['estacionamiento'],
+    text: 'Al estacionar paralelo a la acera, el vehículo no debe separarse a más de:',
+    options: ['5 cm', '10 cm', '20 cm', '30 cm'],
+    correctIndex: 1,
+    explanation: 'El Artículo 137 establece que los vehículos deben estacionarse paralelos a no más de 10 cm de la acera y a 50 cm de otro vehículo.',
+  },
+  {
+    id: 'q3-18', moduleId: 'mod-3', difficulty: 'medium', tags: ['estacionamiento'],
+    text: 'Al estacionar en una pendiente ascendente, ¿qué velocidad debe aplicar luego de apagar el motor?',
+    options: ['Reversa', 'Neutro', '1ra velocidad', '3ra velocidad'],
+    correctIndex: 2,
+    explanation: 'En pendientes ascendentes (subiendo), debe aplicar 1ra velocidad y girar el timón. En descendentes, debe aplicar reversa.',
+  },
+
   // ============================================
   // MÓDULO 4: Señalización Vial (30 preguntas)
   // ============================================
@@ -611,6 +633,21 @@ export const questions: Question[] = [
     explanation: 'Exceder los límites de velocidad establecidos es una infracción grave.',
   },
 
+  {
+    id: 'q7-11', moduleId: 'mod-7', difficulty: 'medium', tags: ['sanciones'],
+    text: 'Según el sistema de puntos (Decreto 287), ¿cuántos puntos resta una infracción MUY peligrosa?',
+    options: ['6 puntos', '8 puntos', '10 puntos', '12 puntos'],
+    correctIndex: 3,
+    explanation: 'Una infracción muy peligrosa acumula 12 puntos y conlleva una multa de 60 pesos.',
+  },
+  {
+    id: 'q7-12', moduleId: 'mod-7', difficulty: 'medium', tags: ['sanciones'],
+    text: '¿Cuántos puntos acumula una infracción clasificada como Menos Peligrosa?',
+    options: ['2 puntos', '4 puntos', '6 puntos', '8 puntos'],
+    correctIndex: 2,
+    explanation: 'Una infracción menos peligrosa acumula 6 puntos en el expediente del conductor.',
+  },
+
   // ============================================
   // MÓDULO 8: Seguridad y Prevención (25 preguntas)
   // ============================================
@@ -718,6 +755,34 @@ export const questions: Question[] = [
     options: ['Solo el gato hidráulico', 'Chaleco reflectante y triángulos de emergencia', 'Solo un botiquín', 'Nada es obligatorio'],
     correctIndex: 1,
     explanation: 'Es obligatorio llevar chaleco reflectante y triángulos de emergencia en el vehículo.',
+  },
+  {
+    id: 'q8-16', moduleId: 'mod-8', difficulty: 'hard', tags: ['alcohol'],
+    text: 'Si una prueba de alcoholímetro arroja un resultado entre 100 y 199 mg/l en sangre, ¿cuál es el diagnóstico?',
+    options: ['Negativo', 'Positivo con riesgo', 'Estado de embriaguez', 'Embriaguez manifiesta'],
+    correctIndex: 2,
+    explanation: 'El rango de 100 a 199 mg/l en sangre se categoriza clínicamente como Estado de embriaguez.',
+  },
+  {
+    id: 'q8-17', moduleId: 'mod-8', difficulty: 'easy', tags: ['conductor', 'distracciones'],
+    text: 'Según el Artículo 102, ¿está permitido usar audífonos o equipos de audio a alto volumen?',
+    options: ['Sí, si va solo', 'Sí, pero solo de día', 'No, está prohibido si impiden oír alertas exteriores', 'Solo en autopistas'],
+    correctIndex: 2,
+    explanation: 'Prohibido usar equipos de audio a un volumen que impida detectar bocinas de aviso, sirenas u otras señales (Art 102).',
+  },
+  {
+    id: 'q8-18', moduleId: 'mod-8', difficulty: 'hard', tags: ['luces'],
+    text: 'Obligatoriamente, ¿hasta cuántos metros deben alumbrar las luces cortas y largas respectivamente?',
+    options: ['20m cortas y 50m largas', '40m cortas y 100m largas', '50m cortas y 150m largas', '60m cortas y 120m largas'],
+    correctIndex: 1,
+    explanation: 'Las luces de cruce (cortas) deben alumbrar hasta 40 metros, mientras que las largas deben alcanzar 100 metros.',
+  },
+  {
+    id: 'q8-19', moduleId: 'mod-8', difficulty: 'medium', tags: ['luces'],
+    text: '¿A qué distancia mínima se debe cambiar de luces largas a cortas para no encandilar a otro vehículo?',
+    options: ['A 50 metros', 'A 100 metros', 'A 150 metros', 'A 200 metros'],
+    correctIndex: 2,
+    explanation: 'Debe bajar sus luces a cortas al acercarse a menos de 150 metros de un vehículo que venga de frente.',
   },
 ];
 

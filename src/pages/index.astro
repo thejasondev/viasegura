@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import ModuleCard from '../components/study/ModuleCard.astro';
 import Logo from '../components/ui/Logo.astro';
+import SignalIcon from '../components/SignalIcon.astro';
 import { modules } from '../data/modules';
 ---
 
@@ -78,7 +79,9 @@ import { modules } from '../data/modules';
   <!-- Quick Access -->
   <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="quick-access">
     <a href="/senales" class="group p-6 rounded-2xl bg-gradient-to-br from-danger-500/10 to-danger-600/5 border border-danger-500/20 hover:border-danger-500/40 transition-all hover:shadow-lg" id="quick-signals">
-      <div class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">🚦</div>
+      <div class="mb-3 group-hover:scale-110 transition-transform duration-300">
+        <SignalIcon name="semaforo_adelante" size="lg" />
+      </div>
       <h3 class="font-bold text-lg mb-1">Señales de Tránsito</h3>
       <p class="text-sm text-surface-500 dark:text-surface-400">Aprende todas las señales con tarjetas interactivas</p>
     </a>

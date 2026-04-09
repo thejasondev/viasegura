@@ -1,5 +1,6 @@
 ---
 import type { StudyModule } from '../../lib/types';
+import SignalIcon from '../SignalIcon.astro';
 
 export interface Props {
   module: StudyModule;
@@ -11,8 +12,8 @@ const { module, progressPercent, index } = Astro.props;
 ---
 
 <a href={`/estudiar/${module.slug}`} class="group flex items-center gap-4 p-4 rounded-2xl bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 dark:hover:border-primary-500/30 transition-all hover:shadow-lg hover:shadow-primary-500/5" id={`module-card-${index}`}>
-  <div class="text-3xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-    {module.icon}
+  <div class="flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+    <SignalIcon name={module.icon} size="md" />
   </div>
   <div class="flex-1 min-w-0">
     <h3 class="font-semibold text-sm truncate group-hover:text-primary-500 transition-colors">{module.title}</h3>

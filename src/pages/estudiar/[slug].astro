@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SignalIcon from '../../components/SignalIcon.astro';
 import { modules, getModuleBySlug } from '../../data/modules';
 
 export function getStaticPaths() {
@@ -20,13 +21,18 @@ const prevModule = modules[modIndex - 1] || null;
   <nav class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 mb-6">
     <a href="/estudiar" class="hover:text-primary-500 transition-colors">📚 Estudiar</a>
     <span>›</span>
-    <span class="text-surface-900 dark:text-surface-100 font-medium">{module.icon} {module.shortTitle}</span>
+    <span class="text-surface-900 dark:text-surface-100 font-medium flex items-center gap-2">
+      <SignalIcon name={module.icon} size="sm" /> 
+      {module.shortTitle}
+    </span>
   </nav>
 
   <!-- Module Header -->
   <div class="mb-8">
     <div class="flex items-center gap-3 mb-2">
-      <span class="text-4xl">{module.icon}</span>
+      <div class="flex-shrink-0">
+        <SignalIcon name={module.icon} size="lg" />
+      </div>
       <div>
         <span class="text-xs font-bold uppercase tracking-wider text-surface-400">Módulo {modIndex + 1}</span>
         <h1 class="text-2xl md:text-3xl font-bold">{module.title}</h1>
@@ -125,12 +131,16 @@ const prevModule = modules[modIndex - 1] || null;
   <div class="flex items-center justify-between pt-6 border-t border-surface-200 dark:border-surface-800">
     {prevModule ? (
       <a href={`/estudiar/${prevModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
-        <span>←</span> {prevModule.icon} {prevModule.shortTitle}
+        <span>←</span> 
+        <SignalIcon name={prevModule.icon} size="sm" className="w-5 h-5" /> 
+        {prevModule.shortTitle}
       </a>
     ) : <div />}
     {nextModule ? (
       <a href={`/estudiar/${nextModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
-        {nextModule.icon} {nextModule.shortTitle} <span>→</span>
+        {nextModule.shortTitle}
+        <SignalIcon name={nextModule.icon} size="sm" className="w-5 h-5" /> 
+        <span>→</span>
       </a>
     ) : (
       <a href="/practica" class="flex items-center gap-2 text-sm font-semibold text-primary-500 hover:text-primary-400 transition-colors">
@@ -149,7 +159,7 @@ const prevModule = modules[modIndex - 1] || null;
 
   let currentIndex = 0;
 
-  function showSection(index: number) {
+  function showSection(index) {
     const sections = document.querySelectorAll('.section-content');
     const tabs = document.querySelectorAll('.section-tab');
 

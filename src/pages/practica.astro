@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import SignalIcon from '../components/SignalIcon.astro';
 import { modules } from '../data/modules';
 import { questions } from '../data/questions';
 ---
@@ -26,7 +27,9 @@ import { questions } from '../data/questions';
           const count = questions.filter((q) => q.moduleId === mod.id).length;
           return (
             <button class="topic-btn flex items-center gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all text-left" data-module={mod.id}>
-              <span class="text-2xl">{mod.icon}</span>
+              <div class="flex-shrink-0">
+                <SignalIcon name={mod.icon} size="sm" />
+              </div>
               <div>
                 <div class="font-semibold text-sm">{mod.shortTitle}</div>
                 <div class="text-xs text-surface-500">{count} preguntas</div>

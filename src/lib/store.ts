@@ -6,7 +6,7 @@ import { atom, map } from 'nanostores';
 import type { UserProgress, ThemeMode, QuizResult, QuizSession } from './types';
 import { saveToStorage, loadFromStorage, getTodayString } from './storage';
 import { calculateNextReview } from './spaced-repetition';
-import { calculateNewStreak } from './progress';
+import { checkBrokenStreak, calculateNewStreak } from './progress';
 
 // ---- Default State ----
 const defaultProgress: UserProgress = {
@@ -33,8 +33,8 @@ export function initStores(): void {
   const savedProgress = loadFromStorage<UserProgress>('progress', defaultProgress);
   $progress.set(savedProgress);
 
-  // Check and update streak
-  updateStreak();
+  // Silently check if streak broke due to inactivity, DO NOT increment just for opening
+  $progress.setKey('streak', checkBrokenStreak(savedProgress.streak));
 }
 
 // ---- Theme Actions ----

@@ -7,7 +7,7 @@ export const modules: StudyModule[] = [
     title: 'Disposiciones Generales',
     shortTitle: 'Generales',
     description: 'Objeto, alcance y definiciones fundamentales de la Ley 109 del Código de Seguridad Vial.',
-    icon: '📜',
+    icon: 'rotonda',
     color: 'primary',
     sections: [
       {
@@ -84,7 +84,7 @@ export const modules: StudyModule[] = [
     title: 'Licencia de Conducción',
     shortTitle: 'Licencia',
     description: 'Categorías, requisitos, vigencia y proceso de obtención de la licencia de conducción.',
-    icon: '🪪',
+    icon: 'fin_limitaciones',
     color: 'success',
     sections: [
       {
@@ -164,7 +164,7 @@ export const modules: StudyModule[] = [
     title: 'Normas de Circulación',
     shortTitle: 'Circulación',
     description: 'Reglas generales, velocidad, adelantamiento, uso de carriles y distancia de seguimiento.',
-    icon: '🚗',
+    icon: 'prohibido_adelantar',
     color: 'accent',
     sections: [
       {
@@ -189,28 +189,30 @@ export const modules: StudyModule[] = [
       },
       {
         id: 's3-2',
-        title: 'Límites de Velocidad',
-        content: `<p>Los límites de velocidad máxima permitida son:</p>
+        title: 'Límites de Velocidad (Ley 109)',
+        content: `<p>Los límites máximos de velocidad en zonas urbanas son:</p>
+<ul>
+<li><strong>20 km/h:</strong> Equipos agrícolas, industriales, marcha atrás, salidas de garajes.</li>
+<li><strong>30 km/h:</strong> Vehículos con arrastre (remolques).</li>
+<li><strong>40 km/h:</strong> Zonas escolares y transporte masivo de personal.</li>
+<li><strong>50 km/h:</strong> Límite general para vehículos de motor urbanos.</li>
+<li><strong>60 km/h:</strong> Velocidad mínima en túneles.</li>
+</ul>
+<p>Límites en vías rurales y autopistas:</p>
 <table>
-<thead><tr><th>Zona</th><th>Velocidad Máxima</th></tr></thead>
+<thead><tr><th>Tipo de Vehículo</th><th>Carreteras</th><th>Autopistas</th></tr></thead>
 <tbody>
-<tr><td><strong>Zona urbana</strong></td><td>50 km/h</td></tr>
-<tr><td><strong>Zonas escolares y hospitalarias</strong></td><td>30 km/h</td></tr>
-<tr><td><strong>Carreteras rurales</strong></td><td>90 km/h</td></tr>
-<tr><td><strong>Autopistas</strong></td><td>100 km/h</td></tr>
-<tr><td><strong>Zona residencial</strong></td><td>40 km/h</td></tr>
+<tr><td>Motos, ómnibus y ligeros</td><td>90 km/h</td><td>100 km/h</td></tr>
+<tr><td>Carga rígidos y articulados</td><td>80 km/h</td><td>90 km/h</td></tr>
+<tr><td>Grúas y remolques</td><td>70 km/h</td><td>80 km/h</td></tr>
 </tbody>
-</table>
-<p><strong>Importante:</strong> Las señales de velocidad en el tramo tienen prioridad sobre los límites generales. Si una señal indica 40 km/h en zona urbana, ese es el límite a cumplir.</p>
-<p>Exceder los límites de velocidad es una de las <strong>principales causas de accidentes</strong> y conlleva sanciones severas.</p>`,
+</table>`,
         keyPoints: [
-          'Urbana: 50 km/h',
-          'Escolar/Hospital: 30 km/h',
-          'Rural: 90 km/h',
-          'Autopista: 100 km/h',
-          'La señal del tramo prevalece sobre el límite general',
+          'Urbana Motor: 50 km/h | Urbana Escolar: 40 km/h',
+          'Autopista Ligeros: 100 km/h | Carretera Ligeros: 90 km/h',
+          'Marcha atrás o salidas: 20 km/h',
         ],
-        tips: ['Los límites de velocidad son pregunta SEGURA en el examen. ¡Memorízalos!'],
+        tips: ['Los límites específicos, como 20 km/h para marcha atrás o 40 km/h en zonas escolares, son vitales.'],
       },
       {
         id: 's3-3',
@@ -257,6 +259,27 @@ export const modules: StudyModule[] = [
           'Mayor velocidad = mayor distancia',
         ],
       },
+      {
+        id: 's3-5',
+        title: 'Estacionamiento, Parqueo y Prohibiciones (Art 103, 137, 138)',
+        content: `<p>Reglas estrictas al estacionar un vehículo (<strong>Art 137 y 138</strong>):</p>
+<ul>
+<li>Hacerlo <strong>paralelo</strong> a la acera a no más de <strong>10 cm</strong> y a <strong>50 cm</strong> de otro vehículo.</li>
+<li>Obligaciones: apagar motor, retirar llave y aplicar freno de mano.</li>
+<li>En pendientes: aplicar <strong>1ra velocidad</strong> (ascendente) o <strong>reversa</strong> (descendente) y girar el timón hacia el contén.</li>
+</ul>
+<h4>Prohibiciones Destacadas en la Vía (Art 103-125)</h4>
+<ul>
+<li>Prohibido circular por aceras, paseos o separador central (Art 106).</li>
+<li>Prohibido reparar vehículos en la vía pública (excepto fuerza mayor) (Art 125).</li>
+<li>Vehículos grandes no pueden exceder: 15m rígidos, 18m articulados, 2.60m de ancho y 4m de alto.</li>
+</ul>`,
+        keyPoints: [
+          'Estacionar: Máx 10 cm acera, 50 cm otro vehículo',
+          'Pendiente subiendo: 1ra vel | bajando: reversa',
+          'Prohibido reparar autos en la calle (salvo emergencia)',
+        ],
+      },
     ],
   },
   {
@@ -265,7 +288,7 @@ export const modules: StudyModule[] = [
     title: 'Señalización Vial',
     shortTitle: 'Señales',
     description: 'Tipos de señales, marcas viales, semáforos y señales del agente de tránsito.',
-    icon: '🚦',
+    icon: 'semaforo_adelante',
     color: 'danger',
     sections: [
       {
@@ -371,32 +394,32 @@ export const modules: StudyModule[] = [
       },
       {
         id: 's4-5',
-        title: 'Marcas Viales y Señales del Agente',
-        content: `<p>Las marcas pintadas en la calzada complementan las señales verticales:</p>
-<h4>Líneas Centrales</h4>
+        title: 'Marcas Viales y Señales del Agente (Art 62, 63, 178)',
+        content: `<p>El <strong>Artículo 62</strong> define el Orden de Prioridad inflexible en la vía:</p>
+<ol>
+<li>Señales de los agentes de la PNR (Tienen la máxima autoridad).</li>
+<li>Señales de circulación provisionales.</li>
+<li>Semáforos.</li>
+<li>Señales verticales.</li>
+<li>Señales horizontales (marcas en el piso).</li>
+</ol>
+<h4>Señales de Autoridad (Art 63)</h4>
 <ul>
-<li><strong>Línea continua</strong>: Prohibido cruzar o adelantar.</li>
-<li><strong>Línea discontinua</strong>: Permitido cruzar y adelantar si hay seguridad.</li>
-<li><strong>Doble línea continua</strong>: Prohibido en ambos sentidos.</li>
+<li><strong>Alto vertical</strong>: Brazo levantado. Significa detenerse de inmediato.</li>
+<li><strong>Alto horizontal</strong>: Brazos extendidos. Detenerse si viene de frente o espalda; pueden pasar flancos laterales.</li>
+<li><strong>Balanceo de luz roja o uso de silbato</strong>: Orden inminente de detención total.</li>
 </ul>
-<h4>Otras Marcas</h4>
+<h4>Marcas Paralelas y Transversales (Art 178-179)</h4>
 <ul>
-<li><strong>Paso peatonal (cebra)</strong>: Franjas blancas donde los peatones tienen prioridad.</li>
-<li><strong>Flechas direccionales</strong>: Indican la dirección obligatoria del carril.</li>
-<li><strong>Línea de pare</strong>: Línea blanca donde debe detenerse el vehículo.</li>
-</ul>
-<h4>Señales del Agente de Tránsito</h4>
-<p><strong>Las señales del agente prevalecen sobre cualquier otra señalización</strong> (semáforos, señales, marcas). El conductor debe obedecer siempre al agente.</p>
-<ul>
-<li><strong>Brazo levantado</strong>: Pare todos los vehículos.</li>
-<li><strong>Brazos extendidos lateralmente</strong>: Pare los vehículos que se acercan de frente y por detrás. Los laterales pueden pasar.</li>
-<li><strong>Brazo moviéndose hacia adelante</strong>: Avance.</li>
+<li><strong>Línea continua</strong>: Estrictamente prohibido cruzar. (Doble continua es riesgo mayor).</li>
+<li><strong>Línea discontinua</strong>: Se puede cruzar o adelantar con seguridad.</li>
+<li><strong>Transversales</strong>: Línea de Pare, Ceda el Paso y Franjas de peatón (cebra).</li>
 </ul>`,
         keyPoints: [
-          'Línea continua = prohibido cruzar',
-          'Línea discontinua = permitido cruzar',
-          'El agente prevalece sobre TODA señalización',
-          'Paso de cebra = prioridad al peatón',
+          'Jerarquía: Agente > Provisional > Semáforo > Vertical > Horizontal',
+          'Brazo levantado: Alto inminente',
+          'Brazos extendidos: Detienen frente y espalda, avanzan laterales',
+          'Doble línea continua = prohibido cruzar en ambos sentidos',
         ],
       },
     ],
@@ -407,7 +430,7 @@ export const modules: StudyModule[] = [
     title: 'Intersecciones y Prioridad',
     shortTitle: 'Prioridad',
     description: 'Reglas de prioridad de paso, rotondas, cruces y vehículos de emergencia.',
-    icon: '🔀',
+    icon: 'ceda',
     color: 'primary',
     sections: [
       {
@@ -486,7 +509,7 @@ export const modules: StudyModule[] = [
     title: 'Peatones y Ciclistas',
     shortTitle: 'Peatones',
     description: 'Derechos y deberes de peatones, normas para ciclistas y zonas escolares.',
-    icon: '🚶',
+    icon: 'peatones',
     color: 'success',
     sections: [
       {
@@ -568,7 +591,7 @@ export const modules: StudyModule[] = [
     title: 'Infracciones y Sanciones',
     shortTitle: 'Infracciones',
     description: 'Clasificación de infracciones, multas y penalidades por violaciones de tránsito.',
-    icon: '⚖️',
+    icon: 'pare',
     color: 'danger',
     sections: [
       {
@@ -607,20 +630,24 @@ export const modules: StudyModule[] = [
       },
       {
         id: 's7-2',
-        title: 'Sanciones y Multas',
-        content: `<p>Las sanciones por infracciones de tránsito incluyen:</p>
+        title: 'Sanciones, Multas y Puntos (Decreto 287)',
+        content: `<p>El sistema de puntos y multas clasifica las penalidades según gravedad:</p>
 <ul>
-<li><strong>Multas económicas</strong>: Varían según la gravedad de la infracción.</li>
+<li><strong>Infracciones Muy Peligrosas:</strong> 12 puntos | Multa de 60 pesos.</li>
+<li><strong>Infracciones Peligrosas:</strong> 8 puntos | Multa de 40 pesos.</li>
+<li><strong>Infracciones Menos Peligrosas:</strong> 6 puntos | Multa de 20 pesos.</li>
+</ul>
+<p>Otras sanciones incluyen:</p>
+<ul>
 <li><strong>Retención temporal del vehículo</strong>: En infracciones graves o si el vehículo no cumple condiciones técnicas.</li>
-<li><strong>Suspensión temporal de la licencia</strong>: Por acumulación de infracciones graves.</li>
+<li><strong>Suspensión temporal de la licencia</strong>: Por acumulación de infracciones.</li>
 <li><strong>Cancelación definitiva de la licencia</strong>: En casos muy graves o reincidencia.</li>
 <li><strong>Responsabilidad penal</strong>: En accidentes con lesiones graves o muerte, puede haber proceso judicial.</li>
-</ul>
-<p>Las multas deben pagarse dentro del <strong>plazo establecido</strong>. El no pago puede generar recargos y complicaciones administrativas.</p>`,
+</ul>`,
         keyPoints: [
-          'Multas económicas según gravedad',
-          'Retención del vehículo en casos graves',
-          'Suspensión o cancelación de licencia',
+          'Muy Peligrosas: 12 puntos / 60 pesos',
+          'Peligrosas: 8 puntos / 40 pesos',
+          'Menos Peligrosas: 6 puntos / 20 pesos',
           'Responsabilidad penal en accidentes graves',
         ],
       },
@@ -632,7 +659,7 @@ export const modules: StudyModule[] = [
     title: 'Seguridad y Prevención',
     shortTitle: 'Seguridad',
     description: 'Cinturón de seguridad, alcohol, condiciones del vehículo, conducción nocturna y primeros auxilios.',
-    icon: '🛡️',
+    icon: 'velocidad_50',
     color: 'accent',
     sections: [
       {
@@ -660,78 +687,70 @@ export const modules: StudyModule[] = [
       },
       {
         id: 's8-2',
-        title: 'Alcohol y Drogas al Volante',
-        content: `<p>Conducir bajo los efectos del alcohol o drogas es una de las infracciones <strong>más graves</strong>:</p>
+        title: 'Alcohol al Volante y Sanciones',
+        content: `<p>Conducir bajo los efectos del alcohol es una de las infracciones <strong>más graves</strong> y está estrictamente categorizada:</p>
+<table>
+<thead><tr><th>Mg/l en Sangre</th><th>Resultado de Prueba</th></tr></thead>
+<tbody>
+<tr><td>0 a 24 mg/l</td><td>Negativo</td></tr>
+<tr><td>25 a 99 mg/l</td><td>Positivo con riesgo / afectación</td></tr>
+<tr><td>100 a 199 mg/l</td><td>Estado de embriaguez</td></tr>
+<tr><td>200 mg/l y más</td><td>Embriaguez manifiesta</td></tr>
+</tbody>
+</table>
+<h4>Consecuencias y Penalidades</h4>
 <ul>
-<li>La tasa máxima de alcohol en sangre permitida es <strong>0.0 g/l</strong> (tolerancia cero en la práctica).</li>
-<li>El alcohol afecta: <strong>reflejos, visión, coordinación y juicio</strong>.</li>
-<li>Incluso pequeñas cantidades de alcohol <strong>aumentan significativamente</strong> el tiempo de reacción.</li>
-<li>Las drogas (medicamentos incluidos) que alteren la capacidad de conducir están <strong>igualmente prohibidas</strong>.</li>
-</ul>
-<h4>Consecuencias</h4>
-<ul>
-<li>Multa severa.</li>
-<li>Retención del vehículo.</li>
-<li>Suspensión o cancelación de la licencia.</li>
-<li>Responsabilidad penal si causa accidente.</li>
+<li><strong>Choferes No Profesionales:</strong> Multa alta (100-300 cuotas) con afectación. Si hay embriaguez: privación de libertad 6 meses a 2 años o multas superiores.</li>
+<li><strong>Choferes Profesionales:</strong> Privación de libertad 6 meses a 1 año solo por afectación. De 1 a 3 años por embriaguez.</li>
 </ul>`,
         keyPoints: [
-          'Tolerancia cero con el alcohol',
-          'Afecta reflejos, visión y coordinación',
-          'Medicamentos también pueden prohibir conducir',
-          'Consecuencia: multa + suspensión de licencia',
+          '0-24 mg/l: Negativo',
+          '25-99 mg/l: Afectación / Riesgo',
+          '100+ mg/l: Estado de embriaguez',
+          'Chofer profesional penalizado con mayor severidad (cárcel)',
         ],
-        tips: ['En el examen, cualquier pregunta sobre alcohol tiene UNA respuesta: NO conducir si bebió.'],
+        tips: ['Los límites en sangre son pregunta clave de embriaguez manifiesta.'],
       },
       {
         id: 's8-3',
-        title: 'Condiciones del Vehículo',
-        content: `<p>Antes de circular, el conductor debe verificar que el vehículo cumpla con las <strong>condiciones técnicas mínimas</strong>:</p>
+        title: 'Condiciones del Vehículo (Art 102, 182)',
+        content: `<p>Antes de circular, el vehículo debe cumplir condiciones técnicas mínimas:</p>
 <ul>
-<li><strong>Frenos</strong>: En perfecto estado de funcionamiento.</li>
-<li><strong>Luces</strong>: Todas funcionando (delanteras, traseras, direccionales, freno).</li>
-<li><strong>Neumáticos</strong>: En buen estado, con la presión adecuada y profundidad de dibujo mínima.</li>
-<li><strong>Espejos retrovisores</strong>: Ajustados correctamente.</li>
-<li><strong>Limpiaparabrisas</strong>: Funcionales.</li>
-<li><strong>Bocina</strong>: En funcionamiento.</li>
-<li><strong>Documentos</strong>: Licencia, propiedad del vehículo, seguro vigente.</li>
+<li><strong>Distancias de frenado (Art 182) a 30 km/h:</strong> Vehículos ligeros (Máx 7.2m). Motocicletas (Máx 7.5m).</li>
+<li><strong>Luces:</strong> Todas funcionando y reguladas.</li>
+<li><strong>Neumáticos:</strong> Presión adecuada y dibujo correcto.</li>
 </ul>
-<p>Un vehículo que no cumpla estas condiciones puede ser <strong>retenido</strong> por las autoridades.</p>`,
+<h4>Distracciones Prohibidas (Art 102)</h4>
+<p>Incluso con el auto en buen estado, las siguientes acciones rompen la seguridad y están explícitamente penadas:</p>
+<ul>
+<li>Uso de teléfonos o dispositivos de comunicación en marcha.</li>
+<li>Equipos de audio a <strong>alto volumen</strong> que impiden oír alertas exteriores.</li>
+<li>Conducir con <strong>una sola mano</strong> (salvo necesidad operativa como cambios de marcha).</li>
+</ul>`,
         keyPoints: [
-          'Verificar: frenos, luces, neumáticos, espejos',
-          'Llevar documentos completos siempre',
-          'Vehículo en mal estado puede ser retenido',
+          'Frenado a 30 km/h: Ligeros 7.2m, Motos 7.5m',
+          'Prohibido usar celular en marcha',
+          'Prohibido usar ambas manos o equipos a alto volumen',
         ],
       },
       {
         id: 's8-4',
-        title: 'Conducción Nocturna y Condiciones Adversas',
-        content: `<p>La conducción nocturna y en condiciones climáticas adversas requiere precauciones adicionales:</p>
-<h4>Noche</h4>
+        title: 'Luces, Visibilidad y Conducción Nocturna (Art 184-186)',
+        content: `<p>Especificaciones exactas del alumbrado exterior y conducción nocturna:</p>
 <ul>
-<li>Usar <strong>luces bajas</strong> (de cruce) obligatoriamente.</li>
-<li>Usar <strong>luces altas</strong> solo en vías sin iluminación y cambiar a bajas al cruzarse con otro vehículo.</li>
-<li>Reducir la <strong>velocidad</strong>, ya que la visibilidad es menor.</li>
-<li>Aumentar la <strong>distancia de seguimiento</strong>.</li>
+<li><strong>Luces cortas:</strong> Deben alumbrar la vía hasta <strong>40 metros</strong>. Son obligatorias en zona urbana iluminada y dentro de túneles.</li>
+<li><strong>Luces largas:</strong> Deben alumbrar hasta <strong>100 metros</strong>. Se prohíben al acercarse a <strong>150 metros</strong> de otro vehículo (para no encandilar).</li>
+<li>La <strong>chapa o matrícula</strong> debe estar iluminada para ser visible a <strong>20 metros</strong>.</li>
 </ul>
-<h4>Lluvia</h4>
+<h4>Conducción en Condiciones Adversas</h4>
 <ul>
-<li>Encender las <strong>luces bajas</strong>.</li>
-<li>Reducir la velocidad (riesgo de <strong>aquaplaning</strong>).</li>
-<li>Duplicar la <strong>distancia de seguimiento</strong>.</li>
-<li>Evitar <strong>frenazos bruscos</strong>.</li>
-</ul>
-<h4>Niebla</h4>
-<ul>
-<li>Usar las <strong>luces antiniebla</strong> (bajas, nunca altas).</li>
-<li>Reducir mucho la velocidad.</li>
-<li>No adelantar.</li>
+<li><strong>Lluvia:</strong> Encender luces cortas, reducir velocidad por aquaplaning, duplicar distancia.</li>
+<li><strong>Niebla:</strong> Usar luces antiniebla o cortas (NUNCA altas), no adelantar.</li>
 </ul>`,
         keyPoints: [
-          'Noche: luces bajas obligatorias',
-          'Cambiar a bajas al cruzarse con otro vehículo',
-          'Lluvia: reducir velocidad, duplicar distancia',
-          'Niebla: luces antiniebla (bajas), no adelantar',
+          'Luces cortas alumbran 40m (Obligatorias en ciudad y túnel)',
+          'Luces largas alumbran 100m (Bajar a cortas a 150m de un vehículo)',
+          'Matrícula visible a 20m de noche',
         ],
       },
       {

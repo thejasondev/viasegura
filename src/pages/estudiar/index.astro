@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import SignalIcon from '../../components/SignalIcon.astro';
 import { modules } from '../../data/modules';
 ---
 
@@ -18,8 +19,8 @@ import { modules } from '../../data/modules';
         style={`animation-delay: ${i * 80}ms`}
       >
         <div class="flex items-start gap-4">
-          <div class="text-4xl flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-            {mod.icon}
+          <div class="flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <SignalIcon name={mod.icon} size="md" />
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
