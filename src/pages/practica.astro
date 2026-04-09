@@ -6,14 +6,29 @@ import { questions } from '../data/questions';
 ---
 
 <Layout title="Práctica" activeNav="practica">
-  <!-- Setup Screen -->
+  <div id="practice-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="absolute inset-0 bg-surface-900/80 backdrop-blur-sm" id="practice-modal-bg"></div>
+    <div class="relative bg-white dark:bg-surface-900 w-full max-w-sm rounded-4xl shadow-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8 transform scale-95 transition-transform duration-300" id="practice-modal-content">
+      <div class="w-16 h-16 rounded-2xl bg-danger-500/10 text-danger-500 flex items-center justify-center mb-6 mx-auto">
+        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-xl md:text-2xl font-bold text-center mb-3">¿Seguro que deseas salir?</h3>
+      <p class="text-surface-500 dark:text-surface-400 text-center mb-8">Perderás tu progreso actual y la práctica se cancelará.</p>
+      <div class="flex gap-3">
+        <button id="practice-modal-cancel" class="flex-1 py-3.5 rounded-xl font-bold bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">Cancelar</button>
+        <button id="practice-modal-confirm" class="flex-1 py-3.5 rounded-xl font-bold bg-danger-500 text-white hover:bg-danger-600 transition-colors">Sí, salir</button>
+      </div>
+    </div>
+  </div>
+
   <div id="setup-screen">
     <div class="mb-6">
       <h1 class="text-2xl md:text-3xl font-bold mb-2">✍️ Práctica Rápida</h1>
       <p class="text-surface-500 dark:text-surface-400">Selecciona un tema y la cantidad de preguntas. Recibirás retroalimentación inmediata.</p>
     </div>
 
-    <!-- Smart Review Mode Banner -->
     <div id="review-mode-banner" class="hidden mb-6 p-4 rounded-2xl bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-500/20">
       <div class="flex items-center gap-3">
         <span class="text-2xl">🧠</span>
@@ -39,7 +54,7 @@ import { questions } from '../data/questions';
           const count = questions.filter((q) => q.moduleId === mod.id).length;
           return (
             <button class="topic-btn flex items-center gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-primary-500/50 transition-all text-left" data-module={mod.id}>
-              <div class="flex-shrink-0">
+              <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center">
                 <SignalIcon name={mod.icon} size="sm" />
               </div>
               <div>
@@ -61,7 +76,6 @@ import { questions } from '../data/questions';
       </div>
     </div>
 
-    <!-- Timer Toggle -->
     <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
       <div class="flex items-center justify-between">
         <div>
@@ -79,10 +93,14 @@ import { questions } from '../data/questions';
     </button>
   </div>
 
-  <!-- Quiz Screen -->
   <div id="quiz-screen" class="hidden">
-    <!-- Progress + Timer -->
     <div class="flex items-center gap-4 mb-6">
+      <button id="practice-abort-btn" class="p-1.5 -ml-1.5 rounded-lg text-surface-500 hover:bg-danger-500/15 hover:text-danger-500 dark:hover:text-danger-400 transition-colors" title="Salir de la práctica">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
       <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-800 rounded-full overflow-hidden">
         <div class="h-full bg-gradient-to-r from-primary-500 to-success-500 rounded-full transition-all duration-500" id="quiz-progress-bar" style="width: 0%"></div>
       </div>
@@ -90,17 +108,15 @@ import { questions } from '../data/questions';
       <span class="text-sm font-mono font-bold text-accent-500 hidden" id="practice-timer">⏱️ 00:00</span>
     </div>
 
-    <!-- Question -->
     <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8 mb-6" id="question-container">
       <div class="flex items-center gap-2 mb-4">
         <span class="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-primary-500/10 text-primary-500" id="q-difficulty">Fácil</span>
-        <span class="text-xs text-surface-400" id="q-module">Módulo 1</span>
+        <span class="text-xs text-surface-400" id="q-module"></span>
       </div>
       <h2 class="text-lg md:text-xl font-bold mb-6" id="q-text"></h2>
       <div class="space-y-3" id="q-options"></div>
     </div>
 
-    <!-- Feedback -->
     <div class="hidden rounded-2xl p-6 mb-6" id="feedback-container">
       <div class="flex items-start gap-3">
         <span class="text-2xl" id="feedback-icon"></span>
@@ -111,13 +127,11 @@ import { questions } from '../data/questions';
       </div>
     </div>
 
-    <!-- Next Button -->
     <button id="next-btn" class="hidden w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] transition-all">
       Siguiente →
     </button>
   </div>
 
-  <!-- Results Screen -->
   <div id="results-screen" class="hidden animate-scale-in">
     <div class="text-center mb-8">
       <div class="text-6xl mb-4" id="result-emoji">🎉</div>
@@ -151,6 +165,14 @@ import { questions } from '../data/questions';
       </a>
     </div>
   </div>
+
+  <div id="module-icon-templates" class="hidden" aria-hidden="true">
+    {modules.map((mod) => (
+      <div data-icon-name={mod.icon}>
+        <SignalIcon name={mod.icon} size="sm" />
+      </div>
+    ))}
+  </div>
 </Layout>
 
 <script>
@@ -159,7 +181,6 @@ import { questions } from '../data/questions';
   import type { Question, QuizResult } from '../lib/types';
   import { selectPracticeQuestions, calculateResults, createQuizSession, formatTime } from '../lib/quiz-engine';
   import { addQuizResult, updateQuestionConfidence, recordStudyActivity, $progress } from '../lib/store';
-  import { generateId } from '../lib/storage';
 
   let selectedModule = 'all';
   let selectedCount = 10;
@@ -172,10 +193,15 @@ import { questions } from '../data/questions';
   let timeRemaining = 0;
   let reviewMode = false;
 
+  // Extraer el HTML del icono desde los templates ocultos
+  function getModuleIconHtml(iconName: string) {
+    const template = document.querySelector(`#module-icon-templates [data-icon-name="${iconName}"]`);
+    return template ? template.innerHTML : '';
+  }
+
   function initPractice() {
     if (!document.getElementById('setup-screen')) return;
 
-    // Check for review mode from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('modo') === 'repaso') {
       reviewMode = true;
@@ -188,7 +214,6 @@ import { questions } from '../data/questions';
       window.history.replaceState({}, '', '/practica');
     });
 
-    // Timer toggle
     const timerToggle = document.getElementById('timer-toggle');
     const timerDot = document.getElementById('timer-toggle-dot');
     timerToggle?.addEventListener('click', () => {
@@ -204,7 +229,6 @@ import { questions } from '../data/questions';
       }
     });
 
-    // Topic selection
     document.querySelectorAll('.topic-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.topic-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
@@ -213,7 +237,6 @@ import { questions } from '../data/questions';
       });
     });
 
-    // Count selection
     document.querySelectorAll('.count-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.count-btn').forEach((b) => b.classList.remove('active', '!border-primary-500', '!bg-primary-500/10'));
@@ -222,66 +245,105 @@ import { questions } from '../data/questions';
       });
     });
 
-    // Start practice
-    document.getElementById('start-practice')?.addEventListener('click', () => {
-      const moduleId = selectedModule === 'all' ? undefined : selectedModule;
+    // Lógica del Botón X (Abortar)
+    const abortBtn = document.getElementById('practice-abort-btn');
+    if (abortBtn) {
+      const newAbortBtn = abortBtn.cloneNode(true);
+      abortBtn.parentNode?.replaceChild(newAbortBtn, abortBtn);
+      
+      newAbortBtn.addEventListener('click', () => {
+        showPracticeModal(() => {
+          if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+          document.getElementById('quiz-screen')?.classList.add('hidden');
+          document.getElementById('setup-screen')?.classList.remove('hidden');
+        });
+      });
+    }
 
-      if (reviewMode) {
-        // In review mode, prioritize weak questions heavily
-        const confidence = $progress.get().questionConfidence;
-        const weakIds = Object.values(confidence)
-          .filter(c => c.confidence === 'low' || new Date(c.nextReview) <= new Date())
-          .map(c => c.questionId);
-        const weakPool = allQuestions.filter(q => weakIds.includes(q.id));
-        if (weakPool.length > 0) {
-          currentQuestions = weakPool.slice(0, selectedCount);
+    const startBtn = document.getElementById('start-practice');
+    if (startBtn) {
+      const newStartBtn = startBtn.cloneNode(true);
+      startBtn.parentNode?.replaceChild(newStartBtn, startBtn);
+      
+      newStartBtn.addEventListener('click', () => {
+        const moduleId = selectedModule === 'all' ? undefined : selectedModule;
+
+        if (reviewMode) {
+          const confidence = $progress.get().questionConfidence;
+          const weakIds = Object.values(confidence)
+            .filter(c => c.confidence === 'low' || new Date(c.nextReview) <= new Date())
+            .map(c => c.questionId);
+          const weakPool = allQuestions.filter(q => weakIds.includes(q.id));
+          if (weakPool.length > 0) {
+            currentQuestions = weakPool.slice(0, selectedCount);
+          } else {
+            currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
+          }
         } else {
           currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
         }
-      } else {
-        currentQuestions = selectPracticeQuestions(allQuestions, moduleId, selectedCount);
-      }
 
-      if (currentQuestions.length === 0) {
-        alert('No hay suficientes preguntas para este tema.');
-        return;
-      }
-      currentIndex = 0;
-      answers = {};
-      answered = false;
-      recordStudyActivity();
+        if (currentQuestions.length === 0) {
+          alert('No hay suficientes preguntas para este tema.');
+          return;
+        }
+        
+        currentIndex = 0;
+        answers = {};
+        answered = false;
+        recordStudyActivity();
 
-      // Timer setup
-      if (timerEnabled) {
-        const timeLimits: Record<number, number> = { 5: 180, 10: 360, 15: 540 };
-        timeRemaining = timeLimits[selectedCount] || selectedCount * 36;
-        startPracticeTimer();
-        document.getElementById('practice-timer')?.classList.remove('hidden');
-      } else {
-        document.getElementById('practice-timer')?.classList.add('hidden');
-      }
+        if (timerEnabled) {
+          const timeLimits: Record<number, number> = { 5: 180, 10: 360, 15: 540 };
+          timeRemaining = timeLimits[selectedCount] || selectedCount * 36;
+          startPracticeTimer();
+          document.getElementById('practice-timer')?.classList.remove('hidden');
+        } else {
+          document.getElementById('practice-timer')?.classList.add('hidden');
+        }
 
-      document.getElementById('setup-screen')!.classList.add('hidden');
-      document.getElementById('quiz-screen')!.classList.remove('hidden');
-      showQuestion();
-    });
-
-    document.getElementById('next-btn')?.addEventListener('click', () => {
-      currentIndex++;
-      if (currentIndex >= currentQuestions.length) {
-        showResults();
-      } else {
+        document.getElementById('setup-screen')!.classList.add('hidden');
+        document.getElementById('quiz-screen')!.classList.remove('hidden');
         showQuestion();
-      }
-    });
+      });
+    }
 
-    document.getElementById('retry-btn')?.addEventListener('click', () => {
-      currentIndex = 0;
-      answers = {};
-      document.getElementById('results-screen')!.classList.add('hidden');
-      document.getElementById('quiz-screen')!.classList.remove('hidden');
-      showQuestion();
-    });
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+      const newNextBtn = nextBtn.cloneNode(true);
+      nextBtn.parentNode?.replaceChild(newNextBtn, nextBtn);
+      
+      newNextBtn.addEventListener('click', () => {
+        currentIndex++;
+        if (currentIndex >= currentQuestions.length) {
+          showResults();
+        } else {
+          showQuestion();
+        }
+      });
+    }
+
+    const retryBtn = document.getElementById('retry-btn');
+    if (retryBtn) {
+      const newRetryBtn = retryBtn.cloneNode(true);
+      retryBtn.parentNode?.replaceChild(newRetryBtn, retryBtn);
+      
+      newRetryBtn.addEventListener('click', () => {
+        currentIndex = 0;
+        answers = {};
+        if (timerEnabled) {
+          const timeLimits: Record<number, number> = { 5: 180, 10: 360, 15: 540 };
+          timeRemaining = timeLimits[selectedCount] || selectedCount * 36;
+          startPracticeTimer();
+        }
+        document.getElementById('results-screen')!.classList.add('hidden');
+        document.getElementById('quiz-screen')!.classList.remove('hidden');
+        showQuestion();
+      });
+    }
   }
 
   function showQuestion() {
@@ -290,7 +352,15 @@ import { questions } from '../data/questions';
     answered = false;
 
     document.getElementById('q-text')!.textContent = q.text;
-    document.getElementById('q-module')!.textContent = mod ? `${mod.icon} ${mod.shortTitle}` : '';
+    
+    // Inyección dinámica de HTML para el Icono y el Título
+    const qModuleEl = document.getElementById('q-module')!;
+    if (mod) {
+      const iconHtml = getModuleIconHtml(mod.icon);
+      qModuleEl.innerHTML = `<span class="flex items-center gap-1.5"><div class="w-5 h-5 flex items-center justify-center">${iconHtml}</div><span>${mod.shortTitle}</span></span>`;
+    } else {
+      qModuleEl.innerHTML = '';
+    }
 
     const diffEl = document.getElementById('q-difficulty')!;
     diffEl.textContent = q.difficulty === 'easy' ? 'Fácil' : q.difficulty === 'medium' ? 'Medio' : 'Difícil';
@@ -323,14 +393,12 @@ import { questions } from '../data/questions';
   function selectAnswer(index: number) {
     if (answered) return;
     answered = true;
-
     const q = currentQuestions[currentIndex];
     answers[q.id] = index;
     const isCorrect = index === q.correctIndex;
 
     updateQuestionConfidence(q.id, isCorrect);
 
-    // Highlight options
     const options = document.querySelectorAll('.option-btn');
     options.forEach((opt, i) => {
       if (i === q.correctIndex) {
@@ -341,7 +409,6 @@ import { questions } from '../data/questions';
       opt.classList.add('pointer-events-none');
     });
 
-    // Show feedback
     const feedbackEl = document.getElementById('feedback-container')!;
     feedbackEl.classList.remove('hidden');
     feedbackEl.className = `rounded-2xl p-6 mb-6 ${isCorrect ? 'bg-success-500/10 border border-success-500/20' : 'bg-danger-500/10 border border-danger-500/20'}`;
@@ -352,7 +419,6 @@ import { questions } from '../data/questions';
 
     document.getElementById('next-btn')!.classList.remove('hidden');
 
-    // Update progress bar
     const progressBar = document.getElementById('quiz-progress-bar') as HTMLElement;
     progressBar.style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
   }
@@ -376,7 +442,6 @@ import { questions } from '../data/questions';
 
   function showResults() {
     if (timerInterval) clearInterval(timerInterval);
-
     const session = createQuizSession('practice', currentQuestions, selectedModule === 'all' ? undefined : selectedModule);
     session.answers = answers;
     session.completedAt = new Date().toISOString();
@@ -398,6 +463,43 @@ import { questions } from '../data/questions';
     document.getElementById('result-score')!.textContent = `${result.score}%`;
     document.getElementById('result-correct')!.textContent = String(result.correctAnswers);
     document.getElementById('result-wrong')!.textContent = String(result.totalQuestions - result.correctAnswers);
+  }
+
+  function showPracticeModal(onConfirm: () => void) {
+    const modal = document.getElementById('practice-modal')!;
+    const bg = document.getElementById('practice-modal-bg')!;
+    const content = document.getElementById('practice-modal-content')!;
+    const confirmBtn = document.getElementById('practice-modal-confirm')!;
+    const cancelBtn = document.getElementById('practice-modal-cancel')!;
+
+    const newConfirm = confirmBtn.cloneNode(true) as HTMLElement;
+    confirmBtn.parentNode?.replaceChild(newConfirm, confirmBtn);
+    const newCancel = cancelBtn.cloneNode(true) as HTMLElement;
+    cancelBtn.parentNode?.replaceChild(newCancel, cancelBtn);
+
+    function hideModal() {
+      modal.classList.add('opacity-0');
+      content.classList.remove('scale-100');
+      content.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 300);
+    }
+
+    newCancel.addEventListener('click', hideModal);
+    bg.addEventListener('click', hideModal);
+    newConfirm.addEventListener('click', () => {
+      hideModal();
+      onConfirm();
+    });
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    void modal.offsetWidth;
+    modal.classList.remove('opacity-0');
+    content.classList.remove('scale-95');
+    content.classList.add('scale-100');
   }
 
   document.addEventListener('astro:page-load', initPractice);
