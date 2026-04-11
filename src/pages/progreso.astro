@@ -11,7 +11,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     <p class="text-surface-500 dark:text-surface-400">Tu camino hacia la licencia de conducción.</p>
   </div>
 
-  <!-- Readiness Indicator -->
   <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6" id="readiness-section">
     <div class="flex items-center justify-between mb-4">
       <h2 class="font-bold flex items-center gap-2"><span>🎯</span> Preparación para el Examen</h2>
@@ -23,7 +22,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     <p class="text-sm text-surface-500 dark:text-surface-400" id="readiness-message">Comienza a estudiar para calcular tu preparación.</p>
   </div>
 
-  <!-- Stats Row -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="stats-grid">
     <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 text-center">
       <div class="text-3xl mb-1">🔥</div>
@@ -48,7 +46,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     </div>
   </div>
 
-  <!-- Module Progress -->
   <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
     <h2 class="font-bold mb-4 flex items-center gap-2"><span>📚</span> Progreso por Módulo</h2>
     <div class="space-y-4">
@@ -71,7 +68,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     </div>
   </div>
 
-  <!-- Exam History -->
   <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
     <h2 class="font-bold mb-4 flex items-center gap-2"><span>📝</span> Historial de Exámenes</h2>
     <div id="exam-history-list"></div>
@@ -82,7 +78,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     </div>
   </div>
 
-  <!-- Weak Points Map -->
   <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6" id="weak-points-section">
     <h2 class="font-bold mb-4 flex items-center gap-2"><span>📌</span> Tus Puntos Débiles</h2>
     <div id="weak-points-list"></div>
@@ -95,7 +90,6 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     </a>
   </div>
 
-  <!-- Achievements -->
   <div class="bg-surface-100 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
     <h2 class="font-bold mb-4 flex items-center gap-2">
       <span>🏆</span> Logros
@@ -112,14 +106,12 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     </div>
   </div>
 
-  <!-- Reset Progress -->
   <div class="text-center mb-8">
     <button id="reset-progress-btn" class="text-xs text-surface-400 hover:text-danger-500 transition-colors underline underline-offset-2">
       🗑️ Reiniciar todo mi progreso
     </button>
   </div>
 
-  <!-- Reset Confirmation Modal -->
   <div id="reset-modal" class="fixed inset-0 z-100 hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-surface-900/80 backdrop-blur-sm" id="reset-modal-bg"></div>
     <div class="relative bg-white dark:bg-surface-900 w-full max-w-sm rounded-3xl shadow-2xl border border-surface-200 dark:border-surface-800 p-6 md:p-8">
@@ -128,7 +120,8 @@ import { ACHIEVEMENTS } from '../lib/achievements';
       </div>
       <h3 class="text-xl font-bold text-center mb-2">¿Reiniciar todo?</h3>
       <p class="text-surface-500 dark:text-surface-400 text-sm text-center mb-6">
-        Esto eliminará permanentemente todo tu progreso: módulos leídos, historial de exámenes, rachas, logros y datos de confianza. <strong class="text-danger-500">Esta acción no se puede deshacer.</strong>
+        Esto eliminará permanentemente todo tu progreso: módulos leídos, historial de exámenes, rachas, logros y datos de confianza.
+        <strong class="text-danger-500">Esta acción no se puede deshacer.</strong>
       </p>
       <div class="flex gap-3">
         <button id="reset-cancel" class="flex-1 py-3 rounded-xl font-bold bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">Cancelar</button>
@@ -140,13 +133,28 @@ import { ACHIEVEMENTS } from '../lib/achievements';
 
 <script>
   import { $progress } from '../lib/store';
-  import { modules } from '../data/modules';
+  import { modules, getModuleSectionCounts } from '../data/modules'; // Novedad: Se importa getModuleSectionCounts
   import { questions } from '../data/questions';
-  import { ACHIEVEMENTS } from '../lib/achievements';
+  import { ACHIEVEMENTS, checkAchievements } from '../lib/achievements'; // Novedad: Se importa checkAchievements
   import { saveToStorage } from '../lib/storage';
 
   function updateProgress() {
-    const progress = $progress.get();
+    let progress = $progress.get();
+
+    // --- SOLUCIÓN DEL ERROR DE LOGROS ---
+    // 1. Evaluamos dinámicamente si el usuario ha desbloqueado algo nuevo
+    const newlyUnlocked = checkAchievements(progress, modules.length, getModuleSectionCounts());
+    
+    // 2. Si hay nuevos logros, actualizamos el store antes de pintar la UI
+    if (newlyUnlocked.length > 0) {
+      progress = {
+        ...progress,
+        achievements: [...progress.achievements, ...newlyUnlocked]
+      };
+      $progress.set(progress); // Actualiza el estado global
+      saveToStorage('progress', progress); // Persiste en local
+    }
+    // ------------------------------------
 
     // Streak
     document.getElementById('pg-streak')!.textContent = String(progress.streak.current);
@@ -166,6 +174,7 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     // Module progress
     let totalSections = 0;
     let totalReadSections = 0;
+
     modules.forEach((mod) => {
       const read = progress.modulesRead[mod.id] || [];
       const pct = mod.sections.length > 0 ? Math.round((read.length / mod.sections.length) * 100) : 0;
@@ -209,6 +218,9 @@ import { ACHIEVEMENTS } from '../lib/achievements';
           <span class="text-xs font-bold ${e.passed ? 'text-success-500' : 'text-danger-500'}">${e.score}%</span>
         </div>
       `).join('');
+    } else {
+      emptyEl.classList.remove('hidden');
+      historyEl.innerHTML = ''; // Limpiamos si hay un reset
     }
 
     // Weak Points Map
@@ -247,17 +259,23 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     } else {
       weakEmptyEl.classList.remove('hidden');
       weakPracticeBtn.classList.add('hidden');
+      weakListEl.innerHTML = ''; // Limpiamos si hay un reset
     }
 
-    // Achievements
+    // Achievements Render
     const unlockedIds = new Set(progress.achievements);
     document.getElementById('badge-count-text')!.textContent = `${progress.achievements.length}/${ACHIEVEMENTS.length}`;
 
     document.querySelectorAll('.achievement-card').forEach((card) => {
       const id = card.getAttribute('data-achievement-id')!;
       if (unlockedIds.has(id)) {
+        // Desbloqueado: Quitar grises y añadir estilos atractivos
         card.classList.remove('opacity-40', 'grayscale');
-        card.classList.add('border-accent-500/30', 'bg-accent-500/5');
+        card.classList.add('border-accent-500/30', 'bg-accent-500/5', 'shadow-sm');
+      } else {
+        // Bloqueado: Asegurarnos de que vuelva a estar gris (Importante para el botón de Resetear)
+        card.classList.add('opacity-40', 'grayscale');
+        card.classList.remove('border-accent-500/30', 'bg-accent-500/5', 'shadow-sm');
       }
     });
   }
@@ -279,6 +297,7 @@ import { ACHIEVEMENTS } from '../lib/achievements';
         resetModal.classList.add('flex');
       }
     }
+
     function hideResetModal() {
       if (resetModal) {
         resetModal.classList.add('hidden');
@@ -289,6 +308,7 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     resetBtn?.addEventListener('click', showResetModal);
     resetCancel?.addEventListener('click', hideResetModal);
     resetBg?.addEventListener('click', hideResetModal);
+    
     resetConfirm?.addEventListener('click', () => {
       const defaultProgress = {
         modulesRead: {},
@@ -299,6 +319,7 @@ import { ACHIEVEMENTS } from '../lib/achievements';
         questionConfidence: {},
         totalStudyTime: 0,
       };
+      
       $progress.set(defaultProgress);
       saveToStorage('progress', defaultProgress);
       hideResetModal();
@@ -312,4 +333,3 @@ import { ACHIEVEMENTS } from '../lib/achievements';
     }
   });
 </script>
-

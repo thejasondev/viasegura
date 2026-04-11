@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import SignalIcon from '../../components/SignalIcon.astro';
-import { modules, getModuleBySlug } from '../../data/modules';
+import { modules } from '../../data/modules';
 
 export function getStaticPaths() {
   return modules.map((mod) => ({
@@ -17,7 +17,6 @@ const prevModule = modules[modIndex - 1] || null;
 ---
 
 <Layout title={module.title} activeNav="estudiar">
-  <!-- Breadcrumb -->
   <nav class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 mb-6">
     <a href="/estudiar" class="hover:text-primary-500 transition-colors">📚 Estudiar</a>
     <span>›</span>
@@ -27,7 +26,6 @@ const prevModule = modules[modIndex - 1] || null;
     </span>
   </nav>
 
-  <!-- Module Header -->
   <div class="mb-8">
     <div class="flex items-center gap-3 mb-2">
       <div class="flex-shrink-0">
@@ -47,7 +45,6 @@ const prevModule = modules[modIndex - 1] || null;
     </div>
   </div>
 
-  <!-- Section Navigation -->
   <div class="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-hide" id="section-tabs">
     {module.sections.map((section, i) => (
       <button
@@ -60,7 +57,6 @@ const prevModule = modules[modIndex - 1] || null;
     ))}
   </div>
 
-  <!-- Section Content -->
   <div id="sections-container">
     {module.sections.map((section, i) => (
       <article
@@ -100,7 +96,6 @@ const prevModule = modules[modIndex - 1] || null;
           </div>
         )}
 
-        <!-- Mark as Read & Navigation -->
         <div class="flex items-center justify-between gap-4 mb-8">
           <button
             class="mark-read-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-success-500 text-white hover:bg-success-600 active:scale-95 transition-all shadow-lg shadow-success-500/20"
@@ -127,7 +122,6 @@ const prevModule = modules[modIndex - 1] || null;
     ))}
   </div>
 
-  <!-- Module Navigation -->
   <div class="flex items-center justify-between pt-6 border-t border-surface-200 dark:border-surface-800">
     {prevModule ? (
       <a href={`/estudiar/${prevModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
@@ -136,6 +130,7 @@ const prevModule = modules[modIndex - 1] || null;
         {prevModule.shortTitle}
       </a>
     ) : <div />}
+    
     {nextModule ? (
       <a href={`/estudiar/${nextModule.slug}`} class="flex items-center gap-2 text-sm hover:text-primary-500 transition-colors">
         {nextModule.shortTitle}
@@ -150,16 +145,12 @@ const prevModule = modules[modIndex - 1] || null;
   </div>
 </Layout>
 
-<script define:vars={{ moduleId: module.id, sectionIds: module.sections.map(s => s.id), totalSections: module.sections.length }}>
-  // This runs at build time to pass props to client
-</script>
-
 <script>
   import { $progress, markSectionRead, recordStudyActivity } from '../../lib/store';
 
   let currentIndex = 0;
 
-  function showSection(index) {
+  function showSection(index: number) {
     const sections = document.querySelectorAll('.section-content');
     const tabs = document.querySelectorAll('.section-tab');
 
@@ -225,7 +216,7 @@ const prevModule = modules[modIndex - 1] || null;
     showSection(0);
     updateReadStatus();
 
-    // Clean up previous listeners by cloning nodes to prevent SPA duplication, just in case
+    // Clean up previous listeners by cloning nodes to prevent SPA duplication
     tabs.forEach((tab) => {
       const newTab = tab.cloneNode(true) as HTMLElement;
       tab.parentNode?.replaceChild(newTab, tab);
@@ -262,65 +253,78 @@ const prevModule = modules[modIndex - 1] || null;
   $progress.subscribe(updateReadStatus);
 </script>
 
-<style>
-  .study-content :global(p) {
+<style is:global>
+  /* * SOLUCIÓN DE ERRORES:
+   * Al utilizar is:global eliminamos todos los errores de sintaxis en el IDE provocados 
+   * por encadenar pseudo-clases de Astro con el prefijo .dark del HTML.
+   */
+  .study-content p {
     margin-bottom: 1rem;
     line-height: 1.7;
   }
-  .study-content :global(ul), .study-content :global(ol) {
+  .study-content ul, .study-content ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
+    list-style-type: disc; /* Asegura que se vean los puntos de la lista */
   }
-  .study-content :global(li) {
+  .study-content li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
   }
-  .study-content :global(strong) {
-    color: var(--color-primary-500);
+  .study-content strong {
+    color: var(--color-primary-600);
   }
-  .dark .study-content :global(strong) {
+  .dark .study-content strong {
     color: var(--color-primary-400);
   }
-  .study-content :global(table) {
+  
+  /* TABLAS */
+  .study-content table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1rem;
     font-size: 0.875rem;
   }
-  .study-content :global(th) {
-    background-color: var(--color-surface-200);
+  .study-content th {
+    background-color: var(--color-surface-200); /* Color claro en Modo Día */
     padding: 0.75rem;
     text-align: left;
     font-weight: 600;
     border-bottom: 2px solid var(--color-surface-300);
   }
-  .dark .study-content :global(th) {
-    background-color: var(--color-surface-800);
+  /* FIX TABLA MODO OSCURO: Fondo transparente para igualar el negro de la tarjeta y aumentar el contraste */
+  .dark .study-content th {
+    background-color: transparent; 
     border-color: var(--color-surface-700);
+    color: var(--color-surface-50);
   }
-  .study-content :global(td) {
+  .study-content td {
     padding: 0.75rem;
     border-bottom: 1px solid var(--color-surface-200);
   }
-  .dark .study-content :global(td) {
+  .dark .study-content td {
     border-color: var(--color-surface-800);
   }
-  .study-content :global(dt) {
+  
+  /* LISTAS DE DEFINICIÓN (Usadas en la sección de conceptos básicos) */
+  .study-content dt {
     font-weight: 700;
     margin-top: 0.75rem;
-    color: var(--color-primary-500);
+    color: var(--color-primary-600);
   }
-  .dark .study-content :global(dt) {
+  .dark .study-content dt {
     color: var(--color-primary-400);
   }
-  .study-content :global(dd) {
+  .study-content dd {
     margin-left: 1rem;
     margin-bottom: 0.5rem;
     color: var(--color-surface-600);
   }
-  .dark .study-content :global(dd) {
+  .dark .study-content dd {
     color: var(--color-surface-400);
   }
+  
+  /* SCROLLBAR OCULTO */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
